@@ -3,4 +3,5 @@
     <string name="no_connection">Cannot load, please check your internet connection and try again</string>
     <string name="txIngredients">Ingredients:</string>
     <string name="txPortions">Portions:</string>
+    <string name="txRetry">Retry</string>
 </resources>

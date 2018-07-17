@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.su43berkut17.nanodegree.bakingapp.data.Recipe;
 import com.su43berkut17.nanodegree.bakingapp.recyclerViews.adapterMainMenu;
@@ -17,10 +19,15 @@ import com.su43berkut17.nanodegree.bakingapp.recyclerViews.adapterMainMenu;
 import java.util.List;
 
 public class mainMenuFragment extends Fragment implements adapterMainMenu.recipeListener{
+    private String TAG="MainFrag";
+
     //recycler view
     private RecyclerView rvMainMenu;
     private RecyclerView.Adapter adapter;
-    private List<Recipe> recipeList;
+    private List<Recipe> recipe;
+
+    //text
+    private Boolean isConnected=false;
 
     public mainMenuFragment(){
     }
@@ -28,23 +35,43 @@ public class mainMenuFragment extends Fragment implements adapterMainMenu.recipe
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        //we get the view
-        View mainView=inflater.inflate(R.layout.fragment_main_menu,container,false);
-        rvMainMenu=mainView.findViewById(R.id.rvRecipes);
+        Log.i(TAG,"We are going to inflate the xml");
+        //we check which view to inflate
+        View mainView = inflater.inflate(R.layout.fragment_main_menu, container, false);
+
+        rvMainMenu = mainView.findViewById(R.id.rvRecipes);
         rvMainMenu.setLayoutManager(new LinearLayoutManager(getContext()));
+        if (recipe!=null) {
+            adapter = new adapterMainMenu(recipe, getContext(), this);
+
+            //we set the adapter
+            rvMainMenu.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+        }
+
 
         return mainView;
     }
 
     public void setAdapter(List<Recipe> recRecipe){
-        Log.i("MaMenFrag","We are going to create the adapter with this many items "+recRecipe.size());
-        adapter=new adapterMainMenu(recRecipe,getContext(),this);
-        rvMainMenu.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+        recipe=recRecipe;
+        //Log.i(TAG,"We are going to update the adapter with this many items "+recipe.size());
+
+        //adapter=new adapterMainMenu(recRecipe,getContext(),this);
+
+        //we set the adapter
+        //rvMainMenu.setAdapter(adapter);
+        //adapter.notifyDataSetChanged();
+    }
+
+    public void changeConnection(Boolean show){
+        isConnected=show;
+        Log.i(TAG,"connection status "+show.toString());
     }
 
     @Override
     public void onRecipeClick(Recipe recipe) {
         //we decide what to do
+        Toast.makeText(getContext(),"Item selected"+recipe.getName(), Toast.LENGTH_SHORT).show();
     }
 }
