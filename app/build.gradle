@@ -37,5 +37,6 @@ dependencies {
     implementation "android.arch.lifecycle:common-java8:$lifecycle_version"
     implementation "android.arch.lifecycle:extensions:$lifecycle_version"
     //annotationProcessor "android.arch.lifecyle:compiler:$lifecycle_version"
-
+    //exoplayer
+    implementation 'com.google.android.exoplayer:exoplayer:2.8.2'
 }

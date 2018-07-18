@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 
 /**
@@ -20,12 +21,20 @@ import android.view.ViewGroup;
 public class fragment_detail extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_RECIPE_ID="recipeId";
+    private static final String ARG_VIDEO_URL="videoUrl";
+    private static final String ARG_THUMBNAIL="thumbnail";
+    private static final String ARG_STEP_TEXT="stepText";
+    private static final String ARG_CURRENT_STEP="currentStep";
+    private static final String ARG_TOTAL_STEP="totalStep";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    //items
+    private static String mRecipeId;
+    private static String mVideoUrl;
+    private static String mThumbnail;
+    private static String mStepText;
+    private static int mCurrentStep;
+    private static int mTotalStep;
 
     private OnFragmentInteractionListener mListener;
 
@@ -33,20 +42,15 @@ public class fragment_detail extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment fragment_detail.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static fragment_detail newInstance(String param1, String param2) {
+    public static fragment_detail newInstance(String recId, String recVideo, String recThumb, String recStep, int recCurrentStep, int recTotalStep) {
         fragment_detail fragment = new fragment_detail();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_RECIPE_ID, recId);
+        args.putString(ARG_VIDEO_URL, recVideo);
+        args.putString(ARG_THUMBNAIL, recThumb);
+        args.putString(ARG_STEP_TEXT, recStep);
+        args.putInt(ARG_CURRENT_STEP, recCurrentStep);
+        args.putInt(ARG_TOTAL_STEP, recTotalStep);
         fragment.setArguments(args);
         return fragment;
     }
@@ -55,8 +59,12 @@ public class fragment_detail extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mRecipeId=getArguments().getString(ARG_RECIPE_ID);
+            mVideoUrl=getArguments().getString(ARG_VIDEO_URL);
+            mThumbnail=getArguments().getString(ARG_THUMBNAIL);
+            mStepText=getArguments().getString(ARG_STEP_TEXT);
+            mCurrentStep=getArguments().getInt(ARG_CURRENT_STEP);
+            mTotalStep=getArguments().getInt(ARG_TOTAL_STEP);
         }
     }
 
@@ -64,13 +72,54 @@ public class fragment_detail extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_fragment_detail, container, false);
+        //return inflater.inflate(R.layout.fragment_fragment_detail, container, false);
+        View detailView=inflater.inflate(R.layout.fragment_fragment_detail, container, false);
+
+        Button buttonNext=detailView.findViewById(R.id.btn_next_step);
+        Button buttonPrevious=detailView.findViewById(R.id.btn_previous_step);
+
+        //we check which buttons to show
+        if (mTotalStep>mCurrentStep){
+            //we check if we are in the last stap
+            if (mTotalStep==mCurrentStep+1){
+                buttonNext.setVisibility(View.GONE);
+            }
+        }else{
+            //we check if we are in the initial position
+            if (mCurrentStep==0){
+                buttonPrevious.setVisibility(View.GONE);
+            }
+        }
+
+        //add the listeners to the buttons
+        /*buttonNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onFragmentInteraction("nextView",mCurrentStep,mTotalStep);
+            }
+        });*/
+
+        buttonNext.setOnClickListener(view ->
+                mListener.onFragmentInteraction("nextView",mCurrentStep,mTotalStep)
+        );
+
+        /*buttonPrevious.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onFragmentInteraction("previousView",mCurrentStep,mTotalStep);
+            }
+        });*/
+        buttonPrevious.setOnClickListener(view ->
+            mListener.onFragmentInteraction("previousView",mCurrentStep,mTotalStep)
+        );
+
+        return detailView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    public void onButtonPressed(String typeOfButton, int currentStep, int totalStep) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onFragmentInteraction(typeOfButton,currentStep,totalStep);
         }
     }
 
@@ -102,7 +151,6 @@ public class fragment_detail extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(String typeOfButton, int currentStep, int totalStep);
     }
 }

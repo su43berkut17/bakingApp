@@ -4,4 +4,9 @@
     <string name="txIngredients">Ingredients:</string>
     <string name="txPortions">Portions:</string>
     <string name="txRetry">Retry</string>
+    <string name="btnNext">Next Step</string>
+    <string name="btnPrevious">Previous Step</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
