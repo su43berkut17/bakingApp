@@ -3,6 +3,7 @@ package com.su43berkut17.nanodegree.bakingapp;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,13 +17,15 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.su43berkut17.nanodegree.bakingapp.data.Recipe;
+import com.su43berkut17.nanodegree.bakingapp.data.Steps;
 import com.su43berkut17.nanodegree.bakingapp.liveData.JsonViewModel;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements noInternetError.OnRetryClickListener{
+public class MainActivity extends AppCompatActivity implements noInternetError.OnRetryClickListener,stepList.OnFragmentInteractionListener,mainMenuFragment.OnMainFragmentInteractionListener{
     mainMenuFragment mainFragment;
     noInternetError errorFragment;
+    stepList stepFragment;
     JsonViewModel viewModel;
 
     String TAG="Main menu";
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements noInternetError.O
         //menu fragment
         mainFragment  = new mainMenuFragment();
         errorFragment = new noInternetError();
+        stepFragment = new stepList();
         errorFragment.setmCallback(this);
 
         fragmentManager.beginTransaction()
@@ -80,5 +84,38 @@ public class MainActivity extends AppCompatActivity implements noInternetError.O
     public void onClickRetry() {
         Toast.makeText(this,"We retry to load the json", Toast.LENGTH_SHORT).show();
         viewModel.getData();
+    }
+
+    //when whe click on a step
+    @Override
+    public void onFragmentInteraction(Steps steps) {
+        //we set the bundle to be sent
+        Bundle b = new Bundle();
+        b.putParcelable("stepsP",steps);
+
+        final Intent intent = new Intent(this,stepList.class);
+        intent.putExtras(b);
+        startActivity(intent);
+    }
+
+    //when we click on a recipe
+    @Override
+    public void mainMenuClick(Recipe recipe) {
+        //we send the steps
+        /*Bundle b = new Bundle();
+        b.putParcelable("fullRecipe",recipe);
+
+        final Intent intent = new Intent(this, stepList.class);
+        intent.putExtras(b);
+        startActivity(intent);*/
+        //we update the fragment ui
+        stepFragment.setAdapter(recipe.getSteps());
+
+        getSupportFragmentManager().beginTransaction()
+                .remove(mainFragment)
+                .replace(R.id.mainActi,stepFragment)
+                .addToBackStack("menuStep")
+                .commit();
+
     }
 }

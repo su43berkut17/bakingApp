@@ -110,8 +110,8 @@ public class JsonParser extends ViewModel{
 
                 for (int j=0;j<jsonIngredients.length();j++){
                     Ingredients ingredient=new Ingredients(jsonIngredients.getJSONObject(i).getInt("quantity"),
-                            jsonIngredients.getJSONObject(i).getString("measure"),
-                            jsonIngredients.getJSONObject(i).getString("ingredient")
+                            jsonIngredients.getJSONObject(j).getString("measure"),
+                            jsonIngredients.getJSONObject(j).getString("ingredient")
                     );
                     ingredients.add(ingredient);
                 }
@@ -123,11 +123,11 @@ public class JsonParser extends ViewModel{
 
                 for (int j=0;j<jsonSteps.length();j++){
                     Steps step=new Steps(
-                            jsonSteps.getJSONObject(i).getInt("id"),
-                            jsonSteps.getJSONObject(i).getString("shortDescription"),
-                            jsonSteps.getJSONObject(i).getString("description"),
-                            jsonSteps.getJSONObject(i).getString("videoURL"),
-                            jsonSteps.getJSONObject(i).getString("thumbnailURL")
+                            jsonSteps.getJSONObject(j).getInt("id"),
+                            jsonSteps.getJSONObject(j).getString("shortDescription"),
+                            jsonSteps.getJSONObject(j).getString("description"),
+                            jsonSteps.getJSONObject(j).getString("videoURL"),
+                            jsonSteps.getJSONObject(j).getString("thumbnailURL")
                     );
 
                     steps.add(step);

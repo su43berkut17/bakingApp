@@ -3,29 +3,29 @@ package com.su43berkut17.nanodegree.bakingapp;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.su43berkut17.nanodegree.bakingapp.data.Recipe;
+import com.su43berkut17.nanodegree.bakingapp.data.Steps;
+import com.su43berkut17.nanodegree.bakingapp.recyclerViews.adapterRecipeSteps;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link stepList.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link stepList#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class stepList extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+import java.util.List;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+
+public class stepList extends Fragment implements adapterRecipeSteps.stepListener{
+    private static final String TAG="stepList";
+
+    //recycler view
+    private RecyclerView rvStepMenu;
+    private RecyclerView.Adapter adapter;
+    private List<Steps> steps;
 
     private OnFragmentInteractionListener mListener;
 
@@ -33,30 +33,12 @@ public class stepList extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment stepList.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static stepList newInstance(String param1, String param2) {
-        stepList fragment = new stepList();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+        if (getArguments()!=null){
+            Recipe recipe=savedInstanceState.getParcelable("fullRecipe");
+            steps=recipe.getSteps();
         }
     }
 
@@ -64,45 +46,42 @@ public class stepList extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_step_list, container, false);
+        View stepView = inflater.inflate(R.layout.fragment_step_list, container, false);
+
+        //we get the recyclerview
+        rvStepMenu=stepView.findViewById(R.id.rvRecipeSteps);
+        rvStepMenu.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        if (steps!=null) {
+            adapter=new adapterRecipeSteps(steps,getContext(),this);
+            rvStepMenu.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+        }
+
+        return stepView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    public void setAdapter(List<Steps> step){
+        steps=step;
+        Log.i(TAG,"the step list is "+steps.toString());
+        for (int i=0;i<steps.size();i++){
+            Log.i(TAG,"step "+i+"--"+steps.get(i).getDescription());
+        }
+    }
+
+    public void onButtonPressed(Steps steps) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onFragmentInteraction(steps);
         }
     }
 
+    //interface for interaction with activity
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+    public void onStepClick(Steps steps) {
+        mListener.onFragmentInteraction(steps);
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(Steps steps);
     }
 }

@@ -12,61 +12,24 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/tv_title"
+            android:id="@+id/tv_step_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:padding="@dimen/default_padding"
             android:text="TextView"
             android:textSize="@dimen/main_menu_title_size"
-            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+        <TextView
+            android:id="@+id/tv_step_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_padding"
+            android:padding="@dimen/default_padding"
+            android:text="TextView"
+            android:textSize="@dimen/main_menu_title_size"
+            app:layout_constraintStart_toEndOf="@+id/tv_step_number"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_titlePortions"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/txPortions"
-            android:textSize="@dimen/main_menu_other_text_size"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title" />
-
-        <TextView
-            android:id="@+id/tv_amountPortions"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text=""
-            android:textSize="@dimen/main_menu_other_text_size"
-            app:layout_constraintStart_toEndOf="@+id/tv_titlePortions"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title" />
-
-        <TextView
-            android:id="@+id/tv_titleIngredients"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/txIngredients"
-            android:textSize="@dimen/main_menu_other_text_size"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_titlePortions" />
-
-        <TextView
-            android:id="@+id/tv_amountIngredients"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text=""
-            android:textSize="@dimen/main_menu_other_text_size"
-            app:layout_constraintStart_toEndOf="@+id/tv_titleIngredients"
-            app:layout_constraintTop_toBottomOf="@+id/tv_titlePortions"
-            android:layout_marginBottom="8dp"/>
 
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>

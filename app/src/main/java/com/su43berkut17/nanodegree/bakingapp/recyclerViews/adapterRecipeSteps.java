@@ -3,6 +3,7 @@ package com.su43berkut17.nanodegree.bakingapp.recyclerViews;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class adapterRecipeSteps extends RecyclerView.Adapter<adapterRecipeSteps.ViewHolder>{
+    private final static String TAG="AdapSteps";
+
     private List<Steps> stepList=new ArrayList<Steps>();
     private Context context;
     private stepListener mStepListener;
@@ -39,8 +42,10 @@ public class adapterRecipeSteps extends RecyclerView.Adapter<adapterRecipeSteps.
     @Override
     public void onBindViewHolder(@NonNull adapterRecipeSteps.ViewHolder holder, int position) {
         final Steps steps=stepList.get(position);
+        Log.i(TAG,"position is: "+position);
 
-        //holder.title.setText(recipe.getName());
+        holder.title.setText(steps.getShortDescription());
+        holder.number.setText(String.valueOf(position+1));
     }
 
     @Override
@@ -49,11 +54,13 @@ public class adapterRecipeSteps extends RecyclerView.Adapter<adapterRecipeSteps.
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        //private TextView title;
+        private TextView number;
+        private TextView title;
 
         public ViewHolder(final  View itemView){
             super(itemView);
-            //title=(TextView)itemView.findViewById(R.id.tv_title);
+            number=(TextView)itemView.findViewById(R.id.tv_step_number);
+            title=(TextView)itemView.findViewById(R.id.tv_step_title);
 
             itemView.setOnClickListener(this);
         }

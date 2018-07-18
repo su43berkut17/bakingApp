@@ -1,5 +1,6 @@
 package com.su43berkut17.nanodegree.bakingapp;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,7 +30,16 @@ public class mainMenuFragment extends Fragment implements adapterMainMenu.recipe
     //text
     private Boolean isConnected=false;
 
+    //listener
+    private OnMainFragmentInteractionListener mMainListener;
+
     public mainMenuFragment(){
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mMainListener=(OnMainFragmentInteractionListener) context;
     }
 
     @Nullable
@@ -55,13 +65,6 @@ public class mainMenuFragment extends Fragment implements adapterMainMenu.recipe
 
     public void setAdapter(List<Recipe> recRecipe){
         recipe=recRecipe;
-        //Log.i(TAG,"We are going to update the adapter with this many items "+recipe.size());
-
-        //adapter=new adapterMainMenu(recRecipe,getContext(),this);
-
-        //we set the adapter
-        //rvMainMenu.setAdapter(adapter);
-        //adapter.notifyDataSetChanged();
     }
 
     public void changeConnection(Boolean show){
@@ -73,5 +76,12 @@ public class mainMenuFragment extends Fragment implements adapterMainMenu.recipe
     public void onRecipeClick(Recipe recipe) {
         //we decide what to do
         Toast.makeText(getContext(),"Item selected"+recipe.getName(), Toast.LENGTH_SHORT).show();
+        mMainListener.mainMenuClick(recipe);
     }
+
+    //interface to main activity
+    public interface OnMainFragmentInteractionListener {
+        void mainMenuClick(Recipe recipe);
+    }
+
 }
