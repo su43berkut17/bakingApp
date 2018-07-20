@@ -27,7 +27,7 @@ public class stepList extends Fragment implements adapterRecipeSteps.stepListene
     private RecyclerView.Adapter adapter;
     private List<Steps> steps;
 
-    private OnFragmentInteractionListener mListener;
+    private onStepClickInterface mListener;
 
     public stepList() {
         // Required empty public constructor
@@ -69,19 +69,20 @@ public class stepList extends Fragment implements adapterRecipeSteps.stepListene
         }
     }
 
-    public void onButtonPressed(Steps steps) {
+    //listeners buttons
+    public void onButtonPressed(Steps steps, int currentStep, int totalSteps) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(steps);
+            mListener.onOpenStep(steps,currentStep,totalSteps);
         }
     }
 
     //interface for interaction with activity
     @Override
-    public void onStepClick(Steps steps) {
-        mListener.onFragmentInteraction(steps);
+    public void onStepClick(Steps steps, int currentStep, int stepSize) {
+        mListener.onOpenStep(steps,currentStep,stepSize);
     }
 
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Steps steps);
+    public interface onStepClickInterface {
+        void onOpenStep(Steps steps, int currentStep, int stepSize);
     }
 }

@@ -1,13 +1,22 @@
 package com.su43berkut17.nanodegree.bakingapp;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.BandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 
 
 /**
@@ -29,7 +38,7 @@ public class fragment_detail extends Fragment {
     private static final String ARG_TOTAL_STEP="totalStep";
 
     //items
-    private static String mRecipeId;
+    private static int mRecipeId;
     private static String mVideoUrl;
     private static String mThumbnail;
     private static String mStepText;
@@ -42,10 +51,10 @@ public class fragment_detail extends Fragment {
         // Required empty public constructor
     }
 
-    public static fragment_detail newInstance(String recId, String recVideo, String recThumb, String recStep, int recCurrentStep, int recTotalStep) {
+    public static fragment_detail newInstance(int recId, String recVideo, String recThumb, String recStep, int recCurrentStep, int recTotalStep) {
         fragment_detail fragment = new fragment_detail();
         Bundle args = new Bundle();
-        args.putString(ARG_RECIPE_ID, recId);
+        args.putInt(ARG_RECIPE_ID, recId);
         args.putString(ARG_VIDEO_URL, recVideo);
         args.putString(ARG_THUMBNAIL, recThumb);
         args.putString(ARG_STEP_TEXT, recStep);
@@ -59,7 +68,7 @@ public class fragment_detail extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mRecipeId=getArguments().getString(ARG_RECIPE_ID);
+            mRecipeId=getArguments().getInt(ARG_RECIPE_ID);
             mVideoUrl=getArguments().getString(ARG_VIDEO_URL);
             mThumbnail=getArguments().getString(ARG_THUMBNAIL);
             mStepText=getArguments().getString(ARG_STEP_TEXT);
@@ -73,20 +82,20 @@ public class fragment_detail extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         //return inflater.inflate(R.layout.fragment_fragment_detail, container, false);
-        View detailView=inflater.inflate(R.layout.fragment_fragment_detail, container, false);
+        View detailView = inflater.inflate(R.layout.fragment_fragment_detail, container, false);
 
-        Button buttonNext=detailView.findViewById(R.id.btn_next_step);
-        Button buttonPrevious=detailView.findViewById(R.id.btn_previous_step);
+        Button buttonNext = detailView.findViewById(R.id.btn_next_step);
+        Button buttonPrevious = detailView.findViewById(R.id.btn_previous_step);
 
         //we check which buttons to show
-        if (mTotalStep>mCurrentStep){
+        if (mTotalStep > mCurrentStep) {
             //we check if we are in the last stap
-            if (mTotalStep==mCurrentStep+1){
+            if (mTotalStep == mCurrentStep + 1) {
                 buttonNext.setVisibility(View.GONE);
             }
-        }else{
+        } else {
             //we check if we are in the initial position
-            if (mCurrentStep==0){
+            if (mCurrentStep == 0) {
                 buttonPrevious.setVisibility(View.GONE);
             }
         }
@@ -100,7 +109,7 @@ public class fragment_detail extends Fragment {
         });*/
 
         buttonNext.setOnClickListener(view ->
-                mListener.onFragmentInteraction("nextView",mCurrentStep,mTotalStep)
+                mListener.onFragmentInteraction("nextView", mCurrentStep, mTotalStep)
         );
 
         /*buttonPrevious.setOnClickListener(new View.OnClickListener() {
@@ -110,10 +119,32 @@ public class fragment_detail extends Fragment {
             }
         });*/
         buttonPrevious.setOnClickListener(view ->
-            mListener.onFragmentInteraction("previousView",mCurrentStep,mTotalStep)
+                mListener.onFragmentInteraction("previousView", mCurrentStep, mTotalStep)
         );
 
+        initiateVideoPlayer(detailView);
+
         return detailView;
+    }
+
+    private void initiateVideoPlayer(View detailview){
+        // 1. Create a default TrackSelector
+        Handler mainHandler = new Handler();
+        BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+        TrackSelection.Factory videoTrackSelectionFactory =
+                new AdaptiveTrackSelection.Factory(bandwidthMeter);
+        DefaultTrackSelector trackSelector =
+                new DefaultTrackSelector(videoTrackSelectionFactory);
+
+        // 2. Create the player
+        SimpleExoPlayer player =
+                ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
+
+        PlayerView playerView;
+        playerView=detailview.findViewById(R.id.recipe_player);
+        playerView.setPlayer(player);
+
+        //
     }
 
     // TODO: Rename method, update argument and hook method into UI event

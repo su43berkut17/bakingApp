@@ -22,10 +22,15 @@ import com.su43berkut17.nanodegree.bakingapp.liveData.JsonViewModel;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements noInternetError.OnRetryClickListener,stepList.OnFragmentInteractionListener,mainMenuFragment.OnMainFragmentInteractionListener{
+public class MainActivity extends AppCompatActivity implements
+        noInternetError.OnRetryClickListener,
+        stepList.onStepClickInterface,
+        mainMenuFragment.OnMainFragmentInteractionListener{
+
     mainMenuFragment mainFragment;
     noInternetError errorFragment;
     stepList stepFragment;
+    fragment_detail detailFragment;
     JsonViewModel viewModel;
 
     String TAG="Main menu";
@@ -42,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements noInternetError.O
         mainFragment  = new mainMenuFragment();
         errorFragment = new noInternetError();
         stepFragment = new stepList();
+        detailFragment = new fragment_detail();
         errorFragment.setmCallback(this);
 
         fragmentManager.beginTransaction()
@@ -88,26 +94,33 @@ public class MainActivity extends AppCompatActivity implements noInternetError.O
 
     //when whe click on a step
     @Override
-    public void onFragmentInteraction(Steps steps) {
+    public void onOpenStep(Steps steps, int currentStep, int stepSize) {
         //we set the bundle to be sent
-        Bundle b = new Bundle();
+        /*Bundle b = new Bundle();
         b.putParcelable("stepsP",steps);
 
         final Intent intent = new Intent(this,stepList.class);
         intent.putExtras(b);
-        startActivity(intent);
+        startActivity(intent);*/
+        detailFragment=new fragment_detail();
+        detailFragment=fragment_detail.newInstance(steps.getId(),
+                steps.getVideoURL(),
+                steps.getThumbnailURL(),
+                steps.getDescription(),
+                currentStep,
+                stepSize);
+
+        getSupportFragmentManager().beginTransaction()
+                .remove(stepFragment)
+                .replace(R.id.mainActi,detailFragment)
+                .addToBackStack("detailStep")
+                .commit();
     }
 
     //when we click on a recipe
     @Override
     public void mainMenuClick(Recipe recipe) {
         //we send the steps
-        /*Bundle b = new Bundle();
-        b.putParcelable("fullRecipe",recipe);
-
-        final Intent intent = new Intent(this, stepList.class);
-        intent.putExtras(b);
-        startActivity(intent);*/
         //we update the fragment ui
         stepFragment.setAdapter(recipe.getSteps());
 
