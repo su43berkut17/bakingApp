@@ -89,7 +89,7 @@ public class fragment_detail extends Fragment {
 
         //we check which buttons to show
         if (mTotalStep > mCurrentStep) {
-            //we check if we are in the last stap
+            //we check if we are in the last step
             if (mTotalStep == mCurrentStep + 1) {
                 buttonNext.setVisibility(View.GONE);
             }
