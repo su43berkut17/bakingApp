@@ -22,31 +22,60 @@ import com.su43berkut17.nanodegree.bakingapp.liveData.JsonViewModel;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements noInternetError.OnRetryClickListener,stepList.OnFragmentInteractionListener,mainMenuFragment.OnMainFragmentInteractionListener{
+public class MainActivity extends AppCompatActivity implements
+        noInternetError.OnRetryClickListener,
+        stepList.onStepClickInterface,
+        mainMenuFragment.OnMainFragmentInteractionListener{
+
     mainMenuFragment mainFragment;
     noInternetError errorFragment;
     stepList stepFragment;
+    fragment_detail detailFragment;
     JsonViewModel viewModel;
 
     String TAG="Main menu";
+
+    //2 panel
+    private boolean mTwoPanel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //we check if we are in 1 panel or 2 panel
+        if (findViewById(R.id.fragContent)!=null){
+            mTwoPanel=true;
+        }else{
+            mTwoPanel=false;
+        }
+
         //we get the fragment manager
-        FragmentManager fragmentManager=getSupportFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
 
         //menu fragment
-        mainFragment  = new mainMenuFragment();
+        mainFragment = new mainMenuFragment();
         errorFragment = new noInternetError();
         stepFragment = new stepList();
+        detailFragment = new fragment_detail();
         errorFragment.setmCallback(this);
 
-        fragmentManager.beginTransaction()
-                .add(R.id.mainActi,errorFragment)
-                .commit();
+        //we check if it is 1 or 2 panel
+        if (mTwoPanel==false) {
+            //it is only 1 panel
+            fragmentManager.beginTransaction()
+                    .add(R.id.mainActi, errorFragment)
+                    .commit();
+        }else{
+            //it is 2 panel
+            //we load the main menu on the 1st panel
+            fragmentManager.beginTransaction()
+                    .add(R.id.mainActi, errorFragment)
+                    .commit();
+
+            //we load the placeholder fragment on the other panel
+            //fragmentManager.beginTransaction()                    .add(R.id.fragContent, loadPlaceHolder)                    .commit();
+        }
 
         //we load the json first
         viewModel= ViewModelProviders.of(this).get(JsonViewModel.class);
@@ -88,26 +117,33 @@ public class MainActivity extends AppCompatActivity implements noInternetError.O
 
     //when whe click on a step
     @Override
-    public void onFragmentInteraction(Steps steps) {
+    public void onOpenStep(Steps steps, int currentStep, int stepSize) {
         //we set the bundle to be sent
-        Bundle b = new Bundle();
+        /*Bundle b = new Bundle();
         b.putParcelable("stepsP",steps);
 
         final Intent intent = new Intent(this,stepList.class);
         intent.putExtras(b);
-        startActivity(intent);
+        startActivity(intent);*/
+        detailFragment=new fragment_detail();
+        detailFragment=fragment_detail.newInstance(steps.getId(),
+                steps.getVideoURL(),
+                steps.getThumbnailURL(),
+                steps.getDescription(),
+                currentStep,
+                stepSize);
+
+        getSupportFragmentManager().beginTransaction()
+                .remove(stepFragment)
+                .replace(R.id.mainActi,detailFragment)
+                .addToBackStack("detailStep")
+                .commit();
     }
 
     //when we click on a recipe
     @Override
     public void mainMenuClick(Recipe recipe) {
         //we send the steps
-        /*Bundle b = new Bundle();
-        b.putParcelable("fullRecipe",recipe);
-
-        final Intent intent = new Intent(this, stepList.class);
-        intent.putExtras(b);
-        startActivity(intent);*/
         //we update the fragment ui
         stepFragment.setAdapter(recipe.getSteps());
 

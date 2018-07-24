@@ -23,7 +23,7 @@ public class adapterRecipeSteps extends RecyclerView.Adapter<adapterRecipeSteps.
     private stepListener mStepListener;
 
     public interface stepListener{
-        void onStepClick(Steps steps);
+        void onStepClick(Steps steps,int currentStep, int stepsSize);
     }
 
     public adapterRecipeSteps(List<Steps> recStep, Context recContext, stepListener recStepListener){
@@ -68,7 +68,7 @@ public class adapterRecipeSteps extends RecyclerView.Adapter<adapterRecipeSteps.
         public void onClick(View view) {
             int clickedPosition=getAdapterPosition();
             Steps steps=stepList.get(clickedPosition);
-            mStepListener.onStepClick(steps);
+            mStepListener.onStepClick(steps,clickedPosition,getItemCount());
         }
     }
 }
