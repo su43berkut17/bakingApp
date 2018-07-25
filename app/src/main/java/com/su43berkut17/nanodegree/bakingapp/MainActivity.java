@@ -27,6 +27,11 @@ public class MainActivity extends AppCompatActivity implements
         stepList.onStepClickInterface,
         mainMenuFragment.OnMainFragmentInteractionListener{
 
+    //values for the panel states
+    private static final String MAIN_MENU_POS="main_menu";
+    private static final String STEP_MENU_POC="step_menu";
+    private static final String STEP_CONTENT="step_content";
+
     mainMenuFragment mainFragment;
     noInternetError errorFragment;
     stepList stepFragment;
@@ -37,6 +42,10 @@ public class MainActivity extends AppCompatActivity implements
 
     //2 panel
     private boolean mTwoPanel;
+
+    //variables that remember the state of the app, what is in which panel
+    private String pane11State;
+    private String panel2State;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
