@@ -43,6 +43,12 @@ public class stepList extends Fragment implements adapterRecipeSteps.stepListene
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mListener=(onStepClickInterface) context;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment

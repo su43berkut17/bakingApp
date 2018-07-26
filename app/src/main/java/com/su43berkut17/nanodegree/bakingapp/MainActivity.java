@@ -25,7 +25,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements
         noInternetError.OnRetryClickListener,
         stepList.onStepClickInterface,
-        mainMenuFragment.OnMainFragmentInteractionListener{
+        mainMenuFragment.OnMainFragmentInteractionListener,
+        fragment_detail.OnFragmentInteractionListener{
 
     mainMenuFragment mainFragment;
     noInternetError errorFragment;
@@ -153,5 +154,10 @@ public class MainActivity extends AppCompatActivity implements
                 .addToBackStack("menuStep")
                 .commit();
 
+    }
+
+    @Override
+    public void onFragmentInteraction(String typeOfButton, int currentStep, int totalStep) {
+        Log.i(TAG,"We clicked the button: "+typeOfButton);
     }
 }
