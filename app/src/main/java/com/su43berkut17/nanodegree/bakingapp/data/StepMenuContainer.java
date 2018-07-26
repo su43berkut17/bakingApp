@@ -6,6 +6,10 @@ import android.os.Parcelable;
 import java.util.List;
 
 public class StepMenuContainer implements Parcelable{
+    //tags for the type of adapter
+    public static final String TYPE_INGREDIENT="ingredient";
+    public static final String TYPE_STEP="step";
+
     //contents
     private int id;
     private String type;

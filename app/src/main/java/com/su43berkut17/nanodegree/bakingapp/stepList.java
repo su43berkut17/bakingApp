@@ -25,10 +25,6 @@ import java.util.List;
 public class stepList extends Fragment implements adapterRecipeSteps.stepListener{
     private static final String TAG="stepList";
 
-    //tags for the type of adapter
-    private static final String TYPE_INGREDIENT="ingredient";
-    private static final String TYPE_STEP="step";
-
     //recycler view
     private RecyclerView rvStepMenu;
     private RecyclerView.Adapter adapter;
@@ -44,8 +40,8 @@ public class stepList extends Fragment implements adapterRecipeSteps.stepListene
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments()!=null){
-            Recipe recipe=savedInstanceState.getParcelable("fullRecipe");
-            steps=recipe.getSteps();
+            //Recipe recipe=savedInstanceState.getParcelable("fullRecipe");
+            //List<Steps> steps=recipe.getSteps();
         }
     }
 
@@ -59,8 +55,8 @@ public class stepList extends Fragment implements adapterRecipeSteps.stepListene
         rvStepMenu=stepView.findViewById(R.id.rvRecipeSteps);
         rvStepMenu.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        if (steps!=null) {
-            adapter=new adapterRecipeSteps(steps,getContext(),this);
+        if (finalAdapter!=null) {
+            adapter=new adapterRecipeSteps(finalAdapter,getContext(),this);
             rvStepMenu.setAdapter(adapter);
             adapter.notifyDataSetChanged();
         }
@@ -71,26 +67,26 @@ public class stepList extends Fragment implements adapterRecipeSteps.stepListene
     public void setAdapter(List<Steps> recStep, List<Ingredients> recIngredients){
         //we need to figure out a way to add 2 types of data to the adapter
         List<Steps> steps = recStep;
-
-
+        List<Steps> stepSend=new ArrayList<>();
 
         //we join the values in a parcelable
         finalAdapter=new ArrayList<>();
 
-        //we cycle through the contents of the steps
-        finalAdapter.add(new StepMenuContainer(0,TYPE_INGREDIENT, recIngredients,null));
+        //we add the ingredient one
+        finalAdapter.add(new StepMenuContainer(0,StepMenuContainer.TYPE_INGREDIENT, recIngredients,null));
 
-
-
-
-        Log.i(TAG,"the step list is "+steps.toString());
-        for (int i=0;i<steps.size();i++){
-            Log.i(TAG,"step "+i+"--"+steps.get(i).getDescription());
+        //we cycle through the steps to create the buttons
+        for (int j=0;j<steps.size();j++){
+            stepSend.clear();
+            stepSend.add(steps.get(j));
+            finalAdapter.add(new StepMenuContainer(j+1,StepMenuContainer.TYPE_STEP,null, stepSend));
         }
+
+        Log.i(TAG,"the full list length is "+finalAdapter.size());
     }
 
-    //listeners buttons
-    public void onButtonPressed(Steps steps, int currentStep, int totalSteps) {
+    //listener buttons
+    public void onButtonPressed(StepMenuContainer steps, int currentStep, int totalSteps) {
         if (mListener != null) {
             mListener.onOpenStep(steps,currentStep,totalSteps);
         }
@@ -98,11 +94,11 @@ public class stepList extends Fragment implements adapterRecipeSteps.stepListene
 
     //interface for interaction with activity
     @Override
-    public void onStepClick(Steps steps, int currentStep, int stepSize) {
+    public void onStepClick(StepMenuContainer steps, int currentStep, int stepSize) {
         mListener.onOpenStep(steps,currentStep,stepSize);
     }
 
     public interface onStepClickInterface {
-        void onOpenStep(Steps steps, int currentStep, int stepSize);
+        void onOpenStep(StepMenuContainer steps, int currentStep, int stepSize);
     }
 }

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.su43berkut17.nanodegree.bakingapp.R;
+import com.su43berkut17.nanodegree.bakingapp.data.StepMenuContainer;
 import com.su43berkut17.nanodegree.bakingapp.data.Steps;
 
 import java.util.ArrayList;
@@ -18,15 +19,16 @@ import java.util.List;
 public class adapterRecipeSteps extends RecyclerView.Adapter<adapterRecipeSteps.ViewHolder>{
     private final static String TAG="AdapSteps";
 
-    private List<Steps> stepList=new ArrayList<Steps>();
+    //private List<Steps> stepList=new ArrayList<Steps>();
+    private List<StepMenuContainer> stepList=new ArrayList<StepMenuContainer>();
     private Context context;
     private stepListener mStepListener;
 
     public interface stepListener{
-        void onStepClick(Steps steps,int currentStep, int stepsSize);
+        void onStepClick(StepMenuContainer steps,int currentStep, int stepsSize);
     }
 
-    public adapterRecipeSteps(List<Steps> recStep, Context recContext, stepListener recStepListener){
+    public adapterRecipeSteps(List<StepMenuContainer> recStep, Context recContext, stepListener recStepListener){
         this.stepList = recStep;
         this.context = recContext;
         this.mStepListener = recStepListener;
@@ -41,11 +43,18 @@ public class adapterRecipeSteps extends RecyclerView.Adapter<adapterRecipeSteps.
 
     @Override
     public void onBindViewHolder(@NonNull adapterRecipeSteps.ViewHolder holder, int position) {
-        final Steps steps=stepList.get(position);
+        final StepMenuContainer steps=stepList.get(position);
         Log.i(TAG,"position is: "+position);
 
-        holder.title.setText(steps.getShortDescription());
-        holder.number.setText(String.valueOf(position+1));
+        //we get the info depending on the type of content
+        if (steps.getType()==StepMenuContainer.TYPE_INGREDIENT){
+            holder.title.setText("Ingredients");
+            holder.number.setVisibility(View.GONE);
+        }
+        if (steps.getType()==StepMenuContainer.TYPE_STEP){
+            holder.number.setText(steps.getStep().get(0).getId());
+            holder.title.setText(steps.getStep().get(0).getShortDescription());
+        }
     }
 
     @Override
@@ -67,7 +76,7 @@ public class adapterRecipeSteps extends RecyclerView.Adapter<adapterRecipeSteps.
         @Override
         public void onClick(View view) {
             int clickedPosition=getAdapterPosition();
-            Steps steps=stepList.get(clickedPosition);
+            StepMenuContainer steps=stepList.get(clickedPosition);
             mStepListener.onStepClick(steps,clickedPosition,getItemCount());
         }
     }
