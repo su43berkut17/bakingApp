@@ -32,11 +32,11 @@ public class adapterIngredients extends RecyclerView.Adapter<adapterIngredients.
 
     @Override
     public void onBindViewHolder(@NonNull adapterIngredients.ViewHolder holder, int position) {
-        final Ingredients recipe=ingredientsList.get(position);
+        final Ingredients recipeIng=ingredientsList.get(position);
 
-        //holder.title.setText(recipe.getName());
-        //holder.ingredients.setText(String.valueOf(recipe.getIngredients().size()));
-        //holder.portions.setText(String.valueOf(recipe.getServings()));
+        holder.ingredient.setText(String.valueOf(position+1)+" - "+recipeIng.getIngredient());
+        holder.portion.setText(String.valueOf(recipeIng.getMeasure()));
+        holder.quantity.setText(String.valueOf(recipeIng.getQuantity()));
     }
 
     @Override
@@ -45,15 +45,15 @@ public class adapterIngredients extends RecyclerView.Adapter<adapterIngredients.
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        //private TextView title;
-        //private TextView portions;
-        //private TextView ingredients;
+        private TextView ingredient;
+        private TextView portion;
+        private TextView quantity;
 
         public ViewHolder(final View itemView){
             super(itemView);
-            //title=(TextView)itemView.findViewById(R.id.tv_title);
-            //portions=(TextView)itemView.findViewById(R.id.tv_amountPortions);
-            //ingredients=(TextView)itemView.findViewById(R.id.tv_amountIngredients);
+            ingredient=(TextView)itemView.findViewById(R.id.tv_ingredient);
+            portion=(TextView)itemView.findViewById(R.id.tv_measure);
+            quantity=(TextView)itemView.findViewById(R.id.tv_quantity);
         }
     }
 }

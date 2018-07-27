@@ -73,7 +73,6 @@ public class stepList extends Fragment implements adapterRecipeSteps.stepListene
     public void setAdapter(List<Steps> recStep, List<Ingredients> recIngredients){
         //we need to figure out a way to add 2 types of data to the adapter
         List<Steps> steps = recStep;
-        List<Steps> stepSend=new ArrayList<>();
 
         //we join the values in a parcelable
         finalAdapter=new ArrayList<>();
@@ -83,8 +82,9 @@ public class stepList extends Fragment implements adapterRecipeSteps.stepListene
 
         //we cycle through the steps to create the buttons
         for (int j=0;j<steps.size();j++){
-            stepSend.clear();
+            List<Steps> stepSend=new ArrayList<>();
             stepSend.add(steps.get(j));
+            Log.i(TAG,"value of step "+stepSend.size()+" - "+stepSend.get(0).getId());
             finalAdapter.add(new StepMenuContainer(j+1,StepMenuContainer.TYPE_STEP,null, stepSend));
         }
 

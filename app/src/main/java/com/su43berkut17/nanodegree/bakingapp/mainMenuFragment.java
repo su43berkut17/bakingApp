@@ -59,7 +59,6 @@ public class mainMenuFragment extends Fragment implements adapterMainMenu.recipe
             adapter.notifyDataSetChanged();
         }
 
-
         return mainView;
     }
 

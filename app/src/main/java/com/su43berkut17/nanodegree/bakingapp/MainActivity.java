@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements
     noInternetError errorFragment;
     stepList stepFragment;
     fragment_detail detailFragment;
+    ingredientList ingredientFragment;
     JsonViewModel viewModel;
 
     String TAG="Main menu";
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements
         errorFragment = new noInternetError();
         stepFragment = new stepList();
         detailFragment = new fragment_detail();
+        ingredientFragment = new ingredientList();
         errorFragment.setmCallback(this);
 
         //we check if it is 1 or 2 panel
@@ -130,35 +132,41 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onOpenStep(StepMenuContainer steps, int currentStep, int stepSize) {
         //we set the bundle to be sent
-        /*Bundle b = new Bundle();
-        b.putParcelable("stepsP",steps);
 
-        final Intent intent = new Intent(this,stepList.class);
-        intent.putExtras(b);
-        startActivity(intent);*/
-        detailFragment=new fragment_detail();
 
         //depends on the type of button
         //it it is an ingredient
         if(steps.getType()==StepMenuContainer.TYPE_INGREDIENT){
-            //detailFragment=fragment_detail.newInstance();
+            ingredientFragment = new ingredientList();
+
+            ingredientFragment.setAdapter(steps.getIngredient());
+
+            ingredientFragment = ingredientList.newInstance(
+                    steps.getIngredient()
+            );
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.mainActi,ingredientFragment)
+                    .addToBackStack("ingredientStep")
+                    .commit();
         }
 
         //if it is a step
         if (steps.getType()==StepMenuContainer.TYPE_STEP){
+            detailFragment=new fragment_detail();
+
             detailFragment=fragment_detail.newInstance(steps.getId(),
                     steps.getStep().get(0).getVideoURL(),
                     steps.getStep().get(0).getThumbnailURL(),
                     steps.getStep().get(0).getDescription(),
                     currentStep,
                     stepSize);
-        }
 
-        getSupportFragmentManager().beginTransaction()
-                .remove(stepFragment)
-                .replace(R.id.mainActi,detailFragment)
-                .addToBackStack("detailStep")
-                .commit();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.mainActi,detailFragment)
+                    .addToBackStack("detailStep")
+                    .commit();
+        }
     }
 
     //when we click on a recipe
@@ -166,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements
     public void mainMenuClick(Recipe recipe) {
         //we send the steps
         //we update the fragment ui
-        //stepFragment.setAdapter(recipe.getSteps());
+        stepFragment.setAdapter(recipe.getSteps(),recipe.getIngredients());
 
         getSupportFragmentManager().beginTransaction()
                 .remove(mainFragment)

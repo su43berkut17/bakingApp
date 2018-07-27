@@ -52,8 +52,16 @@ public class adapterRecipeSteps extends RecyclerView.Adapter<adapterRecipeSteps.
             holder.number.setVisibility(View.GONE);
         }
         if (steps.getType()==StepMenuContainer.TYPE_STEP){
-            holder.number.setText(steps.getStep().get(0).getId());
-            holder.title.setText(steps.getStep().get(0).getShortDescription());
+            List<Steps> tempStep;
+            tempStep=steps.getStep();
+
+            Steps finalStep=tempStep.get(0);
+
+
+            holder.number.setText(String.valueOf(steps.getStep().get(0).getId()));
+            //holder.title.setText(steps.getStep().get(0).getShortDescription());
+            holder.title.setText(finalStep.getShortDescription());
+            Log.i(TAG,"step id is "+steps.getStep().get(0).getId());
         }
     }
 
