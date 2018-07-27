@@ -14,8 +14,9 @@
             android:gravity="center">
             <com.google.android.exoplayer2.ui.PlayerView
                 android:id="@+id/recipe_player"
-                android:layout_width="0dp"
-                android:layout_height="0dp">
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_weight="1">
             </com.google.android.exoplayer2.ui.PlayerView>
             <TextView
                 android:id="@+id/tv_steps"

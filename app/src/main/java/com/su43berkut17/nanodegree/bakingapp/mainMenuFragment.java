@@ -62,13 +62,15 @@ public class mainMenuFragment extends Fragment implements adapterMainMenu.recipe
         return mainView;
     }
 
-    public void setAdapter(List<Recipe> recRecipe){
-        recipe=recRecipe;
+    @Override
+    public void onPause() {
+        super.onPause();
+
+
     }
 
-    public void changeConnection(Boolean show){
-        isConnected=show;
-        Log.i(TAG,"connection status "+show.toString());
+    public void setAdapter(List<Recipe> recRecipe){
+        recipe=recRecipe;
     }
 
     @Override
@@ -82,5 +84,7 @@ public class mainMenuFragment extends Fragment implements adapterMainMenu.recipe
     public interface OnMainFragmentInteractionListener {
         void mainMenuClick(Recipe recipe);
     }
+
+    //we need to add a callback to the interface so it can get that the main menu fragment is getting destroyed
 
 }

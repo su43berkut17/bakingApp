@@ -23,15 +23,16 @@ import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
-import com.google.android.exoplayer2.upstream.HttpDataSource;
+import com.su43berkut17.nanodegree.bakingapp.data.StepMenuContainer;
+
+import java.util.List;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link fragment_detail.OnFragmentInteractionListener} interface
+ * {@link OnStepDetailClick} interface
  * to handle interaction events.
  * Use the {@link fragment_detail#newInstance} factory method to
  * create an instance of this fragment.
@@ -45,6 +46,10 @@ public class fragment_detail extends Fragment {
     private static final String ARG_CURRENT_STEP="currentStep";
     private static final String ARG_TOTAL_STEP="totalStep";
 
+    //type of button
+    public static final String BTN_PREVIOUS="previous_button";
+    public static final String BTN_NEXT="next_button";
+
     //items
     private static int mRecipeId;
     private static String mVideoUrl;
@@ -53,7 +58,7 @@ public class fragment_detail extends Fragment {
     private static int mCurrentStep;
     private static int mTotalStep;
 
-    private OnFragmentInteractionListener mListener;
+    private OnStepDetailClick mListener;
 
     public fragment_detail() {
         // Required empty public constructor
@@ -118,7 +123,7 @@ public class fragment_detail extends Fragment {
         });*/
 
         buttonNext.setOnClickListener(view ->
-                mListener.onFragmentInteraction("nextView", mCurrentStep, mTotalStep)
+                mListener.OnStepDetail(BTN_NEXT, mCurrentStep, mTotalStep)
         );
 
         /*buttonPrevious.setOnClickListener(new View.OnClickListener() {
@@ -128,7 +133,7 @@ public class fragment_detail extends Fragment {
             }
         });*/
         buttonPrevious.setOnClickListener(view ->
-                mListener.onFragmentInteraction("previousView", mCurrentStep, mTotalStep)
+                mListener.OnStepDetail(BTN_PREVIOUS, mCurrentStep, mTotalStep)
         );
 
         initiateVideoPlayer(detailView);
@@ -163,23 +168,19 @@ public class fragment_detail extends Fragment {
         MediaSource mediaSource = new ExtractorMediaSource.Factory(new DefaultHttpDataSourceFactory("detailFragment")).createMediaSource(uri);
 
         player.prepare(mediaSource,true,false);
-
-
-
-        //
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(String typeOfButton, int currentStep, int totalStep) {
+    /*public void onButtonPressed(String typeOfButton, int currentStep, int totalStep) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(typeOfButton,currentStep,totalStep);
+            mListener.OnStepDetail(typeOfButton,currentStep,totalStep);
         }
-    }
+    }*/
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mListener = (OnFragmentInteractionListener) context;
+        mListener = (OnStepDetailClick) context;
     }
 
     @Override
@@ -188,17 +189,7 @@ public class fragment_detail extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(String typeOfButton, int currentStep, int totalStep);
+    public interface OnStepDetailClick {
+        void OnStepDetail(String typeOfButton, int currentStep, int totalStep);
     }
 }

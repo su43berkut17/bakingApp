@@ -91,6 +91,10 @@ public class stepList extends Fragment implements adapterRecipeSteps.stepListene
         Log.i(TAG,"the full list length is "+finalAdapter.size());
     }
 
+    public List<StepMenuContainer> getStepList(){
+        return finalAdapter;
+    }
+
     //listener buttons
     public void onButtonPressed(StepMenuContainer steps, int currentStep, int totalSteps) {
         if (mListener != null) {
