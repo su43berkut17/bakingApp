@@ -7,4 +7,6 @@
     <string name="btnNext">Next Step</string>
     <string name="btnPrevious">Previous Step</string>
     <string name="hello_blank_fragment">Pick a recipe and a Step!</string>
+    <string name="widget_initial_instruction">Please select a recipe in the app</string>
+    <string name="add_widget">Add widget</string>
 </resources>

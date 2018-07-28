@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements
     private boolean mTwoPanel;
 
     //variables that remember the state of the app, what is in which panel
-    private String panelState1;
+    public String panelState1;
     private String panelState2;
 
     @Override
