@@ -1,7 +1,9 @@
 package com.su43berkut17.nanodegree.bakingapp;
 
+import android.appwidget.AppWidgetManager;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ComponentName;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -150,6 +152,9 @@ public class MainActivity extends AppCompatActivity implements
                 .replace(R.id.mainActi,stepFragment)
                 .addToBackStack("menuStep")
                 .commit();
+
+        //we update in the widget
+        updateIngredientsWidgetService.startActionUpdateIngredients(this,recipe.getName(),recipe.getIngredients());
     }
 
     //when whe click on a step

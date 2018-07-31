@@ -20,6 +20,8 @@
             </intent-filter>
         </activity>
         <service android:name=".updateIngredientsWidgetService"/>
+        <service android:name=".ingredientsWidgetRemoteViewService"
+            android:permission="android.permission.BIND_REMOTE_VIEWS"></service>
         <receiver android:name=".IngredientsWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

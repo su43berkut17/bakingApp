@@ -1,15 +1,20 @@
 package com.su43berkut17.nanodegree.bakingapp;
 
 import android.app.IntentService;
+import android.appwidget.AppWidgetManager;
+import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.su43berkut17.nanodegree.bakingapp.data.Ingredients;
 
 import java.util.List;
 
 public class updateIngredientsWidgetService extends IntentService{
+    public static final String TAG="WidgetUpdateService";
     public static final String ACTION_UPDATE_WIDGET="com.su43berkut17.nanodegree.bakingapp.action.update_widget";
     private static String nameOfRecipe;
     private static List<Ingredients> ingredientsList;
@@ -23,6 +28,7 @@ public class updateIngredientsWidgetService extends IntentService{
         if (recNameOfRecipe!=null) {
             nameOfRecipe = recNameOfRecipe;
             ingredientsList = recIngredientsList;
+            Log.i(TAG,"ingredients received on the service "+ingredientsList.size());
         }
 
         //we start the intent
@@ -43,10 +49,15 @@ public class updateIngredientsWidgetService extends IntentService{
 
     //method that updates the ingredients
     private void updateIngredientsWidget(){
-        //we check if the data is not null
-        if (ingredientsList!=null){
-            //data has been sent, we update the widget!
+        //data has been sent, we update the widget!
+        //we get the widget manager
+        AppWidgetManager appWidgetManager=AppWidgetManager.getInstance(this);
+        int[] appWidgetsIds = appWidgetManager.getAppWidgetIds(new ComponentName(this,IngredientsWidget.class));
 
+        if (ingredientsList!=null){
+            Log.i(TAG,"We begin the update all ingredients widget with "+ingredientsList.size());
         }
+
+        IngredientsWidget.updateAllIngredientWidgets(this,appWidgetManager,appWidgetsIds, nameOfRecipe, ingredientsList);
     }
 }
