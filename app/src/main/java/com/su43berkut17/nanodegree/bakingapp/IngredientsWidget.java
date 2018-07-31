@@ -22,11 +22,19 @@ public class IngredientsWidget extends AppWidgetProvider {
 
     private static final String TAG="IngredientsWidget";
 
+    //we create the variables here
+    private static String mNameOfRecipe;
+    private static List<Ingredients> mIngredientsList;
+
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId, String nameOfRecipe, List<Ingredients> ingredientsList) {
 
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.ingredients_widget);
+
+        //we set the values inside the widget provider
+        mNameOfRecipe=nameOfRecipe;
+        mIngredientsList=ingredientsList;
 
         //initial state
         if (nameOfRecipe==null) {
@@ -56,15 +64,12 @@ public class IngredientsWidget extends AppWidgetProvider {
 
             //we set the content of the ingredients on the list
             Intent intent = new Intent(context,ingredientsWidgetRemoteViewService.class);
-
             ArrayList<Ingredients> sendIngredients;
             sendIngredients=new ArrayList<>(ingredientsList);
-
+            intent.putParcelableArrayListExtra("INGREDIENT_LIST", sendIngredients);
             Log.i(TAG,"The number of items in the ingredients received is  "+ingredientsList.size());
             Log.i(TAG,"The number of items in the ingredients converted to array is "+sendIngredients.size());
 
-            //intent.putParcelableArrayListExtra("INGREDIENT_LIST", sendIngredients);
-            //intent.putExtra("test","this is a test");
             views.setRemoteAdapter(R.id.list_view_widget,intent);
         }
 
@@ -86,13 +91,13 @@ public class IngredientsWidget extends AppWidgetProvider {
         /*for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }*/
-        updateIngredientsWidgetService.startActionUpdateIngredients(context,null,null);
+        updateIngredientsWidgetService.startActionUpdateIngredients(context,mNameOfRecipe,mIngredientsList);
     }
 
     @Override
     public void onEnabled(Context context) {
         // Enter relevant functionality for when the first widget is created
-        updateIngredientsWidgetService.startActionUpdateIngredients(context,null,null);
+        updateIngredientsWidgetService.startActionUpdateIngredients(context,mNameOfRecipe,mIngredientsList);
     }
 
     @Override
