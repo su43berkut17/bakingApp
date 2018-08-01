@@ -84,11 +84,11 @@ public class stepList extends Fragment implements adapterRecipeSteps.stepListene
         for (int j=0;j<steps.size();j++){
             List<Steps> stepSend=new ArrayList<>();
             stepSend.add(steps.get(j));
-            Log.i(TAG,"value of step "+stepSend.size()+" - "+stepSend.get(0).getId());
+            //Log.i(TAG,"value of step "+stepSend.size()+" - "+stepSend.get(0).getId());
             finalAdapter.add(new StepMenuContainer(j+1,StepMenuContainer.TYPE_STEP,null, stepSend));
         }
 
-        Log.i(TAG,"the full list length is "+finalAdapter.size());
+        //Log.i(TAG,"the full list length is "+finalAdapter.size());
     }
 
     public List<StepMenuContainer> getStepList(){

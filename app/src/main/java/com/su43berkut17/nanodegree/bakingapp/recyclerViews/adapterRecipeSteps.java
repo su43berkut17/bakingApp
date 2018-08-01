@@ -44,7 +44,7 @@ public class adapterRecipeSteps extends RecyclerView.Adapter<adapterRecipeSteps.
     @Override
     public void onBindViewHolder(@NonNull adapterRecipeSteps.ViewHolder holder, int position) {
         final StepMenuContainer steps=stepList.get(position);
-        Log.i(TAG,"position is: "+position);
+        //Log.i(TAG,"position is: "+position);
 
         //we get the info depending on the type of content
         if (steps.getType()==StepMenuContainer.TYPE_INGREDIENT){
@@ -61,7 +61,7 @@ public class adapterRecipeSteps extends RecyclerView.Adapter<adapterRecipeSteps.
             holder.number.setText(String.valueOf(steps.getStep().get(0).getId()));
             //holder.title.setText(steps.getStep().get(0).getShortDescription());
             holder.title.setText(finalStep.getShortDescription());
-            Log.i(TAG,"step id is "+steps.getStep().get(0).getId());
+            //Log.i(TAG,"step id is "+steps.getStep().get(0).getId());
         }
     }
 

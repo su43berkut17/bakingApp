@@ -103,22 +103,22 @@ public class JsonParser extends ViewModel{
             for (int i=0;i<jsonArray.length();i++){
                 jsonObject= jsonArray.getJSONObject(i);
 
-                //initialize the ingredientes
+                //initialize the ingredients
                 List<Ingredients> ingredients=new ArrayList<Ingredients>();
-                //JSONObject jsonIngredients=jsonObject.getJSONObject("ingredients");
                 JSONArray jsonIngredients=jsonObject.getJSONArray("ingredients");
 
                 for (int j=0;j<jsonIngredients.length();j++){
-                    Ingredients ingredient=new Ingredients(jsonIngredients.getJSONObject(i).getInt("quantity"),
+                    Ingredients ingredient=new Ingredients(
+                            jsonIngredients.getJSONObject(j).getDouble("quantity"),
                             jsonIngredients.getJSONObject(j).getString("measure"),
                             jsonIngredients.getJSONObject(j).getString("ingredient")
                     );
                     ingredients.add(ingredient);
+                    Log.i(TAG,"the ingredient is "+ingredient.getIngredient()+"-"+ingredient.getMeasure()+" "+ingredient.getQuantity());
                 }
 
                 //initialize the steps
                 List<Steps> steps=new ArrayList<Steps>();
-                //JSONObject jsonSteps=jsonObject.getJSONObject("steps");
                 JSONArray jsonSteps=jsonObject.getJSONArray("steps");
 
                 for (int j=0;j<jsonSteps.length();j++){

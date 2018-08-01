@@ -2,12 +2,14 @@ package com.su43berkut17.nanodegree.bakingapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.su43berkut17.nanodegree.bakingapp.data.Ingredients;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,31 +18,40 @@ public class ingredientsWidgetRemoteViewService extends RemoteViewsService{
     public static final String TAG="WidgetRemoteViewService";
 
     //we set the other stuff
-    public static List<Ingredients> ingredientsList;
+
 
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent){
-        Log.i(TAG,"we get the intent to start the adapter");
-        ingredientsList=intent.getParcelableArrayListExtra("INGREDIENT_LIST");
-
-        return new adapterWidgetRemoteView(this.getApplicationContext(),intent,"hello");
+        return new adapterWidgetRemoteView(this.getApplicationContext(),intent);
     }
 
     class adapterWidgetRemoteView implements
             RemoteViewsService.RemoteViewsFactory{
 
-        private static final String TAG="adapWidRemVi";
+        //private static final String TAG="adapWidRemVi";
+        private List<Ingredients> ingredientsList;
         private Context mContext;
-        private String textTest;
-        //private List<Ingredients> ingredientsList=new ArrayList<>();
-        //we might have to use a cursor
 
+        public adapterWidgetRemoteView(Context context,Intent intent){
 
-        public adapterWidgetRemoteView(Context context,Intent intent,String test){
             mContext=context;
-            ingredientsList=intent.getParcelableArrayListExtra("INGREDIENT_LIST");
-            textTest=test;
-            Log.i(TAG,"the test received in a string is "+textTest);
+            int numIn=intent.getIntExtra("NUMBER",0);
+            ArrayList<String> ingredients=new ArrayList<>();
+            ArrayList<String> amount=new ArrayList<>();
+            ArrayList<String> measure=new ArrayList<>();
+
+            ingredients=intent.getStringArrayListExtra("INGREDIENTS");
+            amount=intent.getStringArrayListExtra("AMOUNT");
+            measure=intent.getStringArrayListExtra("MEASURE");
+
+            ingredientsList=new ArrayList<>();
+
+            for (int i=0;i<numIn;i++){
+                Ingredients temp=new Ingredients(Double.parseDouble(amount.get(i)),measure.get(i),ingredients.get(i));
+                ingredientsList.add(temp);
+            }
+
+            Log.i(TAG,"we start the object and process the ingredients new list "+numIn);
         }
 
         @Override
@@ -50,8 +61,9 @@ public class ingredientsWidgetRemoteViewService extends RemoteViewsService{
         @Override
         public void onDataSetChanged() {
             //we will load the ingredients in the content provider
-            Log.i(TAG,"On Data set changed but we already set the ingredients list as static");
-            Log.i(TAG,"we print the test data we received as a parameter "+textTest);
+            Log.i(TAG,"On Data set changed the number of ingredients is "+ingredientsList.size());
+            //here we ned to get the infomration smowhow
+            ingredientsList=IngredientsWidget.mIngredientsList;
         }
 
         @Override
@@ -70,12 +82,14 @@ public class ingredientsWidgetRemoteViewService extends RemoteViewsService{
         @Override
         public RemoteViews getViewAt(int position){
             if (ingredientsList==null){
+                //Log.i(TAG,"ingredients list is null");
                 return null;
             }else {
+                //Log.i(TAG,"We begin feeding the list, size of object "+ingredientsList.size()+" -- "+mContext.getPackageName());
                 RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.rv_ingredients_widget_list);
                 Ingredients ingredient = ingredientsList.get(position);
 
-                rv.setTextViewText(R.id.ingName, ingredient.getIngredient());
+                rv.setTextViewText(R.id.ingName, ingredient.getQuantity()+" "+ingredient.getMeasure()+" - "+ingredient.getIngredient());
 
                 return rv;
             }

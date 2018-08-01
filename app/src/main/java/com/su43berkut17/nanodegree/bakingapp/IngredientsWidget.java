@@ -5,9 +5,9 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 
 import com.su43berkut17.nanodegree.bakingapp.data.Ingredients;
@@ -24,7 +24,7 @@ public class IngredientsWidget extends AppWidgetProvider {
 
     //we create the variables here
     private static String mNameOfRecipe;
-    private static List<Ingredients> mIngredientsList;
+    public static List<Ingredients> mIngredientsList;
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId, String nameOfRecipe, List<Ingredients> ingredientsList) {
@@ -37,12 +37,14 @@ public class IngredientsWidget extends AppWidgetProvider {
         mIngredientsList=ingredientsList;
 
         //initial state
-        if (nameOfRecipe==null) {
+        if (mNameOfRecipe==null) {
+            Log.i(TAG,"We initialize the null content in the widget");
             CharSequence widgetText = context.getString(R.string.widget_initial_instruction);
 
             //we hide the other stuff
             views.setViewVisibility(R.id.frame_layout_widget_recipe_title, View.GONE);
             views.setViewVisibility(R.id.list_view_widget_linear_layout,View.GONE);
+            views.setViewVisibility(R.id.empty_widget,View.VISIBLE);
 
             views.setTextViewText(R.id.appwidget_text, widgetText);
             views.setImageViewResource(R.id.widget_alert_icon, android.R.drawable.ic_dialog_alert);
@@ -55,8 +57,11 @@ public class IngredientsWidget extends AppWidgetProvider {
             views.setOnClickPendingIntent(R.id.widget_alert_icon, pendingIntent);
             views.setOnClickPendingIntent(R.id.appwidget_text, pendingIntent);
         }else{
+            Log.i(TAG,"We initialize the ingredients content in the widget");
             //there is content we create the proper view
             //we hide the initial state
+            views.setViewVisibility(R.id.frame_layout_widget_recipe_title, View.VISIBLE);
+            views.setViewVisibility(R.id.list_view_widget_linear_layout,View.VISIBLE);
             views.setViewVisibility(R.id.empty_widget,View.GONE);
 
             //we set the recipe title
@@ -64,22 +69,40 @@ public class IngredientsWidget extends AppWidgetProvider {
 
             //we set the content of the ingredients on the list
             Intent intent = new Intent(context,ingredientsWidgetRemoteViewService.class);
-            ArrayList<Ingredients> sendIngredients;
-            sendIngredients=new ArrayList<>(ingredientsList);
-            intent.putParcelableArrayListExtra("INGREDIENT_LIST", sendIngredients);
+            intent.putExtra("NUMBER",ingredientsList.size());
+
+            //we do the cycle
+            ArrayList<String> ingredients=new ArrayList<>();
+            ArrayList<String> amount=new ArrayList<>();
+            ArrayList<String> measure=new ArrayList<>();
+            for (int i=0;i<ingredientsList.size();i++){
+                ingredients.add(ingredientsList.get(i).getIngredient());
+                amount.add(String.valueOf(ingredientsList.get(i).getQuantity()));
+                measure.add(ingredientsList.get(i).getMeasure());
+            }
+
+            //we put the string lists
+            intent.putStringArrayListExtra("INGREDIENTS",ingredients);
+            intent.putStringArrayListExtra("AMOUNT",amount);
+            intent.putStringArrayListExtra("MEASURE",measure);
+
             Log.i(TAG,"The number of items in the ingredients received is  "+ingredientsList.size());
-            Log.i(TAG,"The number of items in the ingredients converted to array is "+sendIngredients.size());
+            Log.i(TAG,"The first ingredient is "+ingredientsList.get(0).getIngredient());
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId,R.id.list_view_widget);
 
             views.setRemoteAdapter(R.id.list_view_widget,intent);
         }
 
         // Instruct the widget manager to update the widget
-        appWidgetManager.updateAppWidget(appWidgetId, views);
+        //appWidgetManager.updateAppWidget(appWidgetId, views);
+        appWidgetManager.partiallyUpdateAppWidget(appWidgetId,views);
+        //appWidgetManager.getInstance(context).updateAppWidget(appWidgetId,views);
     }
 
     //we set the public void that updates all the widgets
     public static void updateAllIngredientWidgets(Context context, AppWidgetManager appWidgetManager,
                                                   int[] appWidgetIds, String nameOfRecipe, List<Ingredients> ingredientsList){
+        Log.i(TAG,"We are updating the number of widgets: "+appWidgetIds.length);
         for (int appWidgetId: appWidgetIds){
             updateAppWidget(context,appWidgetManager,appWidgetId,nameOfRecipe,ingredientsList);
         }
@@ -88,17 +111,31 @@ public class IngredientsWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // There may be multiple widgets active, so update all of them
-        /*for (int appWidgetId : appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, appWidgetId);
-        }*/
+        if (mIngredientsList!=null) {
+            Log.i(TAG, "We are calling on update, the size of the ingtredient list is " + mIngredientsList.size());
+        }
         updateIngredientsWidgetService.startActionUpdateIngredients(context,mNameOfRecipe,mIngredientsList);
+    }
+
+   /* @Override
+    public void onReceive(Context context, Intent intent) {
+        updateIngredientsWidgetService.startActionUpdateIngredients(context,mNameOfRecipe,mIngredientsList);
+    }
+
+
+
+    @Override
+    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
+
+        updateIngredientsWidgetService.startActionUpdateIngredients(context, mNameOfRecipe, mIngredientsList);
+        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
     }
 
     @Override
     public void onEnabled(Context context) {
         // Enter relevant functionality for when the first widget is created
-        updateIngredientsWidgetService.startActionUpdateIngredients(context,mNameOfRecipe,mIngredientsList);
-    }
+
+    }*/
 
     @Override
     public void onDisabled(Context context) {

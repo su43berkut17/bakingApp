@@ -2,7 +2,6 @@ package com.su43berkut17.nanodegree.bakingapp;
 
 import android.app.IntentService;
 import android.appwidget.AppWidgetManager;
-import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -54,10 +53,7 @@ public class updateIngredientsWidgetService extends IntentService{
         AppWidgetManager appWidgetManager=AppWidgetManager.getInstance(this);
         int[] appWidgetsIds = appWidgetManager.getAppWidgetIds(new ComponentName(this,IngredientsWidget.class));
 
-        if (ingredientsList!=null){
-            Log.i(TAG,"We begin the update all ingredients widget with "+ingredientsList.size());
-        }
-
+        //appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetsIds,R.id.list_view_widget);
         IngredientsWidget.updateAllIngredientWidgets(this,appWidgetManager,appWidgetsIds, nameOfRecipe, ingredientsList);
     }
 }
