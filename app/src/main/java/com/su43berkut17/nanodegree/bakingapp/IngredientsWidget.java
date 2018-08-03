@@ -94,9 +94,7 @@ public class IngredientsWidget extends AppWidgetProvider {
         }
 
         // Instruct the widget manager to update the widget
-        //appWidgetManager.updateAppWidget(appWidgetId, views);
-        appWidgetManager.partiallyUpdateAppWidget(appWidgetId,views);
-        //appWidgetManager.getInstance(context).updateAppWidget(appWidgetId,views);
+        appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
     //we set the public void that updates all the widgets

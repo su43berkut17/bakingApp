@@ -3,6 +3,7 @@ package com.su43berkut17.nanodegree.bakingapp;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,6 +25,7 @@ import java.util.List;
 
 public class stepList extends Fragment implements adapterRecipeSteps.stepListener{
     private static final String TAG="stepList";
+    private static final String SAVED_LIST="saved_list";
 
     //recycler view
     private RecyclerView rvStepMenu;
@@ -39,9 +41,17 @@ public class stepList extends Fragment implements adapterRecipeSteps.stepListene
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments()!=null){
-            //Recipe recipe=savedInstanceState.getParcelable("fullRecipe");
-            //List<Steps> steps=recipe.getSteps();
+
+        if (savedInstanceState!=null){
+            Log.i(TAG,"Fragment state exists so we load the content we saved");
+            //we saved some content
+            ArrayList<StepMenuContainer> receiveList=new ArrayList<StepMenuContainer>();
+            receiveList=savedInstanceState.getParcelableArrayList(SAVED_LIST);
+            finalAdapter=new ArrayList<>();
+            //sendList=finalAdapter.toArray();
+            for (int i=0;i<receiveList.size();i++){
+                finalAdapter.add(receiveList.get(i));
+            }
         }
     }
 
@@ -68,6 +78,35 @@ public class stepList extends Fragment implements adapterRecipeSteps.stepListene
         }
 
         return stepView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        //we save the stuff we need
+        ArrayList<StepMenuContainer> sendList=new ArrayList<StepMenuContainer>();
+        //sendList=finalAdapter.toArray();
+        for (int i=0;i<finalAdapter.size();i++){
+            sendList.add(finalAdapter.get(i));
+        }
+
+        outState.putParcelableArrayList(SAVED_LIST,sendList);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
     }
 
     public void setAdapter(List<Steps> recStep, List<Ingredients> recIngredients){

@@ -22,6 +22,8 @@ import java.util.List;
 public class mainMenuFragment extends Fragment implements adapterMainMenu.recipeListener{
     private String TAG="MainFrag";
 
+    //need to save the list recipe for the lifecycle!!!!!!!!!!!!
+
     //recycler view
     private RecyclerView rvMainMenu;
     private RecyclerView.Adapter adapter;
@@ -65,8 +67,6 @@ public class mainMenuFragment extends Fragment implements adapterMainMenu.recipe
     @Override
     public void onPause() {
         super.onPause();
-
-
     }
 
     public void setAdapter(List<Recipe> recRecipe){

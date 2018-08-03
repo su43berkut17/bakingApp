@@ -15,6 +15,7 @@ import com.su43berkut17.nanodegree.bakingapp.data.Recipe;
 import com.su43berkut17.nanodegree.bakingapp.data.StepMenuContainer;
 import com.su43berkut17.nanodegree.bakingapp.liveData.JsonViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
@@ -30,6 +31,8 @@ public class MainActivity extends AppCompatActivity implements
     private static final String POS_INGREDIENT_CONTENT="ingredient_content";
     private static final String POS_PLACEHOLDER="placeholder";
 
+    private static final String STEP_LIST_SAVED="step_list_saved";
+
     mainMenuFragment mainFragment;
     noInternetError errorFragment;
     stepList stepFragment;
@@ -42,6 +45,9 @@ public class MainActivity extends AppCompatActivity implements
     //2 panel
     private boolean mTwoPanel;
 
+    //variable to store the step list for the previous and next buttons
+    private static List<StepMenuContainer> mStepList;
+
     //variables that remember the state of the app, what is in which panel
     public String panelState1;
     private String panelState2;
@@ -51,52 +57,123 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (savedInstanceState==null) {
-            panelState1 = POS_MAIN_MENU;
+        //we check if we are in 1 panel or 2 panel
+        if (findViewById(R.id.fragContent) != null) {
+            mTwoPanel = true;
+        } else {
+            mTwoPanel = false;
         }
 
-            //we check if we are in 1 panel or 2 panel
-            if (findViewById(R.id.fragContent) != null) {
-                mTwoPanel = true;
-            } else {
-                mTwoPanel = false;
+        //we get the fragment manager
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        //menu fragment
+        mainFragment = new mainMenuFragment();
+        errorFragment = new noInternetError();
+        stepFragment = new stepList();
+        detailFragment = new fragment_detail();
+        ingredientFragment = new ingredientList();
+        errorFragment.setmCallback(this);
+
+        //we check what instance is loaded
+        if (savedInstanceState==null) {
+            //it the 1st load of the app
+            panelState1 = POS_MAIN_MENU;
+            panelState2 = POS_PLACEHOLDER;
+
+            loadMainMenu(fragmentManager);
+        }else{
+            //it was created, we check the options
+            //if it is just the main menu
+            if (savedInstanceState.getString("PANEL_1")==POS_MAIN_MENU){
+                loadMainMenu(fragmentManager);
             }
 
-            //we get the fragment manager
-            FragmentManager fragmentManager = getSupportFragmentManager();
-
-            //menu fragment
-            mainFragment = new mainMenuFragment();
-            errorFragment = new noInternetError();
-            stepFragment = new stepList();
-            detailFragment = new fragment_detail();
-            ingredientFragment = new ingredientList();
-            errorFragment.setmCallback(this);
-
-            //we check if it is 1 or 2 panel
-            if (mTwoPanel == false) {
-                //it is only 1 panel
-                fragmentManager.beginTransaction()
-                        .add(R.id.mainActi, errorFragment)
-                        .commit();
-            } else {
-                //it is 2 panel
-                //we load the main menu on the 1st panel
-                fragmentManager.beginTransaction()
-                        .add(R.id.mainActi, errorFragment)
-                        .commit();
-
-                //we load the placeholder fragment on the other panel
-                //fragmentManager.beginTransaction()                    .add(R.id.fragContent, loadPlaceHolder)                    .commit();
-            }
-
-            //we load the json first
-            viewModel = ViewModelProviders.of(this).get(JsonViewModel.class);
-            viewModel.getData().observe(this, mainMenuObserver);
+            Log.i(TAG,"there is already a saved instance state");
+        }
     }
 
-    final Observer<List<Recipe>> mainMenuObserver= new Observer<List<Recipe>>(){
+    @Override
+    protected void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
 
+        //we save the items needed
+        outState.putString("PANEL_1",panelState1);
+        outState.putString("PANEL_2",panelState2);
+        Log.i(TAG,"on save instance state");
+
+        //save the step list if it is not null
+        if (mStepList!=null){
+            Log.i(TAG,"we are SAVING the step list");
+            ArrayList<StepMenuContainer> stepListSend= new ArrayList<StepMenuContainer>();
+            for (int i=0;i<mStepList.size();i++){
+                stepListSend.add(mStepList.get(i));
+            }
+
+            outState.putParcelableArrayList(STEP_LIST_SAVED,stepListSend);
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        //we assign the items
+        panelState1=savedInstanceState.getString("PANEL_1");
+        panelState2=savedInstanceState.getString("PANEL_2");
+
+        Log.i(TAG,"on Restore instance state");
+        //load the step list if it is not null
+        if (savedInstanceState.getParcelableArrayList(STEP_LIST_SAVED)!=null){
+            Log.i(TAG,"we are LOADING the step list");
+            ArrayList<StepMenuContainer> stepListReceive=new ArrayList<>();
+            stepListReceive=savedInstanceState.getParcelableArrayList(STEP_LIST_SAVED);
+            mStepList=new ArrayList<>();
+            for (int i=0;i<stepListReceive.size();i++){
+                mStepList.add(stepListReceive.get(i));
+            }
+        }
+    }
+
+    //lifecycle loaders
+    private void loadMainMenu(FragmentManager fragmentManager){
+        Log.i(TAG,"loading main menu");
+
+        //we load the main menu in either instance
+        fragmentManager.beginTransaction()
+                .add(R.id.mainActi, errorFragment)
+                .commit();
+
+        //we check if it is 1 or 2 panel
+        if (mTwoPanel == true) {
+            //it is 2 panel
+            //we load the main menu on the 1st panel
+            fragmentManager.beginTransaction()
+                    .add(R.id.mainActi, errorFragment)
+                    .commit();
+
+            //we load the placeholder fragment on the other panel
+            //fragmentManager.beginTransaction()                    .add(R.id.fragContent, loadPlaceHolder)                    .commit();
+        }
+
+        //we load the json first
+        viewModel = ViewModelProviders.of(this).get(JsonViewModel.class);
+        viewModel.getData().observe(this, mainMenuObserver);
+    }
+
+    //we load the step menu
+    /*private void loadStepMenu(){
+        //we update the fragment ui
+        stepFragment.setAdapter(recipe.getSteps(),recipe.getIngredients());
+
+        getSupportFragmentManager().beginTransaction()
+                .remove(mainFragment)
+                .replace(R.id.mainActi,stepFragment)
+                .addToBackStack("menuStep")
+                .commit();
+    }*/
+
+    final Observer<List<Recipe>> mainMenuObserver= new Observer<List<Recipe>>(){
         @Override
         public void onChanged(@Nullable List<Recipe> recipeList) {
             //we check if we are in the main menu
@@ -128,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements
     //listener of error fragment button
     @Override
     public void onClickRetry() {
-        Toast.makeText(this,"We retry to load the json", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this,"We retry to load the json", Toast.LENGTH_SHORT).show();
         viewModel.getData();
     }
 
@@ -152,6 +229,9 @@ public class MainActivity extends AppCompatActivity implements
                 .replace(R.id.mainActi,stepFragment)
                 .addToBackStack("menuStep")
                 .commit();
+
+        //we save the steps
+        mStepList=stepFragment.getStepList();
 
         //we update in the widget
         updateIngredientsWidgetService.startActionUpdateIngredients(this,recipe.getName(),recipe.getIngredients());
@@ -250,10 +330,10 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void OnStepDetail(String typeOfButton, int currentStep, int totalStep) {
         Log.i(TAG,"We clicked the button: "+typeOfButton+" the current step is: "+currentStep+" the total steps is: "+totalStep);
-
+        Log.i(TAG,"the step list saved is "+mStepList);
+        Log.i(TAG,"the step list length is "+mStepList.size());
         //we get the step list
-        List<StepMenuContainer> stepList;
-        stepList=stepFragment.getStepList();
+        //mStepList=stepFragment.getStepList();
 
         StepMenuContainer steps;
 
@@ -265,7 +345,7 @@ public class MainActivity extends AppCompatActivity implements
             currentStep--;
 
         }
-        steps=stepList.get(currentStep);
+        steps=mStepList.get(currentStep);
 
         if (steps.getType() == StepMenuContainer.TYPE_INGREDIENT) {
             //we change the current panels

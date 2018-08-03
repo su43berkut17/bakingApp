@@ -94,47 +94,35 @@ public class fragment_detail extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        //return inflater.inflate(R.layout.fragment_fragment_detail, container, false);
         View detailView = inflater.inflate(R.layout.fragment_fragment_detail, container, false);
 
         //populate the ui
-        TextView textDescription = detailView.findViewById(R.id.tv_steps);
-        textDescription.setText(mStepText);
+        //we check if it is video only mode
+        if (detailView.findViewById(R.id.btn_next_step)!=null) {
+            TextView textDescription = detailView.findViewById(R.id.tv_steps);
+            textDescription.setText(mStepText);
 
-        Button buttonNext = detailView.findViewById(R.id.btn_next_step);
-        Button buttonPrevious = detailView.findViewById(R.id.btn_previous_step);
+            Button buttonNext = detailView.findViewById(R.id.btn_next_step);
+            Button buttonPrevious = detailView.findViewById(R.id.btn_previous_step);
 
-        //we check which buttons to show
-        //we check if we are in the last step
-        if (mTotalStep == mCurrentStep + 1) {
-            buttonNext.setVisibility(View.GONE);
-        }
-        //we check if we are in the initial position
-        if (mCurrentStep == 0) {
-            buttonPrevious.setVisibility(View.GONE);
-        }
-
-        //add the listeners to the buttons
-        /*buttonNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.onFragmentInteraction("nextView",mCurrentStep,mTotalStep);
+            //we check which buttons to show
+            //we check if we are in the last step
+            if (mTotalStep == mCurrentStep + 1) {
+                buttonNext.setVisibility(View.GONE);
             }
-        });*/
-
-        buttonNext.setOnClickListener(view ->
-                mListener.OnStepDetail(BTN_NEXT, mCurrentStep, mTotalStep)
-        );
-
-        /*buttonPrevious.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.onFragmentInteraction("previousView",mCurrentStep,mTotalStep);
+            //we check if we are in the initial position
+            if (mCurrentStep == 0) {
+                buttonPrevious.setVisibility(View.GONE);
             }
-        });*/
-        buttonPrevious.setOnClickListener(view ->
-                mListener.OnStepDetail(BTN_PREVIOUS, mCurrentStep, mTotalStep)
-        );
+
+            buttonNext.setOnClickListener(view ->
+                    mListener.OnStepDetail(BTN_NEXT, mCurrentStep, mTotalStep)
+            );
+
+            buttonPrevious.setOnClickListener(view ->
+                    mListener.OnStepDetail(BTN_PREVIOUS, mCurrentStep, mTotalStep)
+            );
+        }
 
         initiateVideoPlayer(detailView);
 
@@ -161,7 +149,7 @@ public class fragment_detail extends Fragment {
 
         PlayerView playerView;
         playerView=detailview.findViewById(R.id.recipe_player);
-        playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
+        playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
         playerView.setPlayer(player);
 
         Uri uri = Uri.parse(mVideoUrl);
@@ -169,13 +157,6 @@ public class fragment_detail extends Fragment {
 
         player.prepare(mediaSource,true,false);
     }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    /*public void onButtonPressed(String typeOfButton, int currentStep, int totalStep) {
-        if (mListener != null) {
-            mListener.OnStepDetail(typeOfButton,currentStep,totalStep);
-        }
-    }*/
 
     @Override
     public void onAttach(Context context) {

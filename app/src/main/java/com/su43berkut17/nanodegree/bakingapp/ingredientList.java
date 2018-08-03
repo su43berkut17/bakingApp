@@ -2,6 +2,8 @@ package com.su43berkut17.nanodegree.bakingapp;
 
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +22,7 @@ public class ingredientList extends Fragment {
      private static final String TAG="IngredientList";
 
      private static final String INGREDIENTS_LIST="ingredientsList";
+     private static final String SAVED_INGREDIENTS="saved_ingredient_list";
 
     //recycler view
     private RecyclerView rvIngredients;
@@ -42,7 +45,17 @@ public class ingredientList extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null ){
+
+        if (savedInstanceState!=null){
+            Log.i(TAG,"Fragment state exists so we load the content we saved in the ingredients");
+            //we saved some content
+            ArrayList<Ingredients> receiveList=new ArrayList<Ingredients>();
+            receiveList=savedInstanceState.getParcelableArrayList(SAVED_INGREDIENTS);
+            ingredients=new ArrayList<>();
+
+            for (int i=0;i<receiveList.size();i++){
+                ingredients.add(receiveList.get(i));
+            }
         }
     }
 
@@ -65,6 +78,35 @@ public class ingredientList extends Fragment {
 
         // Inflate the layout for this fragment
         return ingredientsView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        //we save the stuff we need
+        ArrayList<Ingredients> sendList=new ArrayList<Ingredients>();
+        //sendList=finalAdapter.toArray();
+        for (int i=0;i<ingredients.size();i++){
+            sendList.add(ingredients.get(i));
+        }
+
+        outState.putParcelableArrayList(SAVED_INGREDIENTS,sendList);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
     }
 
     public void setAdapter(List<Ingredients> recIngredients){

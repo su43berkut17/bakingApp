@@ -28,7 +28,6 @@ public class ingredientsWidgetRemoteViewService extends RemoteViewsService{
     class adapterWidgetRemoteView implements
             RemoteViewsService.RemoteViewsFactory{
 
-        //private static final String TAG="adapWidRemVi";
         private List<Ingredients> ingredientsList;
         private Context mContext;
 
@@ -51,7 +50,7 @@ public class ingredientsWidgetRemoteViewService extends RemoteViewsService{
                 ingredientsList.add(temp);
             }
 
-            Log.i(TAG,"we start the object and process the ingredients new list "+numIn);
+            //Log.i(TAG,"we start the object and process the ingredients new list "+numIn);
         }
 
         @Override
@@ -61,8 +60,6 @@ public class ingredientsWidgetRemoteViewService extends RemoteViewsService{
         @Override
         public void onDataSetChanged() {
             //we will load the ingredients in the content provider
-            Log.i(TAG,"On Data set changed the number of ingredients is "+ingredientsList.size());
-            //here we ned to get the infomration smowhow
             ingredientsList=IngredientsWidget.mIngredientsList;
         }
 
