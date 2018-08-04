@@ -93,10 +93,10 @@ public class stepList extends Fragment implements adapterRecipeSteps.stepListene
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-
+        Log.i(TAG,"We are saving the instance state");
         //we save the stuff we need
         ArrayList<StepMenuContainer> sendList=new ArrayList<StepMenuContainer>();
-        //sendList=finalAdapter.toArray();
+
         for (int i=0;i<finalAdapter.size();i++){
             sendList.add(finalAdapter.get(i));
         }

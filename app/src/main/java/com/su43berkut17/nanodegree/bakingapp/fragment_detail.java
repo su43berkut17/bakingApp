@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
@@ -59,6 +60,9 @@ public class fragment_detail extends Fragment {
     private static int mTotalStep;
 
     private OnStepDetailClick mListener;
+
+    //exoplayer
+    SimpleExoPlayer player;
 
     public fragment_detail() {
         // Required empty public constructor
@@ -143,7 +147,7 @@ public class fragment_detail extends Fragment {
         // 2. Create the player
         //SimpleExoPlayer player =
                 //ExoPlayerFactory.newSimpleInstance(getContext(),trackSelector);
-        SimpleExoPlayer player = ExoPlayerFactory.newSimpleInstance(
+        player = ExoPlayerFactory.newSimpleInstance(
                 new DefaultRenderersFactory(getContext()),
                 new DefaultTrackSelector(), new DefaultLoadControl());
 
@@ -156,6 +160,7 @@ public class fragment_detail extends Fragment {
         MediaSource mediaSource = new ExtractorMediaSource.Factory(new DefaultHttpDataSourceFactory("detailFragment")).createMediaSource(uri);
 
         player.prepare(mediaSource,true,false);
+
     }
 
     @Override
@@ -168,6 +173,7 @@ public class fragment_detail extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        player.release();
     }
 
     public interface OnStepDetailClick {

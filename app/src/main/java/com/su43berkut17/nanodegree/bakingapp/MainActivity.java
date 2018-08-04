@@ -1,15 +1,13 @@
 package com.su43berkut17.nanodegree.bakingapp;
 
-import android.appwidget.AppWidgetManager;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.ComponentName;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.ActionBar;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.su43berkut17.nanodegree.bakingapp.data.Recipe;
 import com.su43berkut17.nanodegree.bakingapp.data.StepMenuContainer;
@@ -20,9 +18,11 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         noInternetError.OnRetryClickListener,
-        stepList.onStepClickInterface,
         mainMenuFragment.OnMainFragmentInteractionListener,
-        fragment_detail.OnStepDetailClick {
+        mainMenuFragment.ChangeActionBarNameListener,
+        mainMenuFragment.SendRecipeListener,
+        stepList.onStepClickInterface,
+        fragment_detail.OnStepDetailClick{
 
     //values for the panel states
     private static final String POS_MAIN_MENU="main_menu";
@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final String POS_PLACEHOLDER="placeholder";
 
     private static final String STEP_LIST_SAVED="step_list_saved";
+    private static final String RECIPE_SAVED="recipe_saved";
 
     mainMenuFragment mainFragment;
     noInternetError errorFragment;
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements
 
     //variable to store the step list for the previous and next buttons
     private static List<StepMenuContainer> mStepList;
+    private static List<Recipe> mRecipe;
 
     //variables that remember the state of the app, what is in which panel
     public String panelState1;
@@ -112,6 +114,17 @@ public class MainActivity extends AppCompatActivity implements
 
             outState.putParcelableArrayList(STEP_LIST_SAVED,stepListSend);
         }
+
+        //save the recipe list if it is not null
+        if (mRecipe!=null){
+            Log.i(TAG,"we are SAVING the recipe list");
+            ArrayList<Recipe> recipeListSend = new ArrayList<>();
+            for (int i=0;i<mRecipe.size();i++){
+                recipeListSend.add(mRecipe.get(i));
+            }
+
+            outState.putParcelableArrayList(RECIPE_SAVED,recipeListSend);
+        }
     }
 
     @Override
@@ -133,6 +146,16 @@ public class MainActivity extends AppCompatActivity implements
                 mStepList.add(stepListReceive.get(i));
             }
         }
+        //load the recipe if it is not null
+        if (savedInstanceState.getParcelableArrayList(RECIPE_SAVED)!=null){
+            Log.i(TAG,"we are LOADING the recipe");
+            ArrayList<Recipe> recipeListReceive=new ArrayList<>();
+            recipeListReceive=savedInstanceState.getParcelableArrayList(RECIPE_SAVED);
+            mRecipe=new ArrayList<>();
+            for (int i=0;i<recipeListReceive.size();i++){
+                mRecipe.add(recipeListReceive.get(i));
+            }
+        }
     }
 
     //lifecycle loaders
@@ -148,9 +171,9 @@ public class MainActivity extends AppCompatActivity implements
         if (mTwoPanel == true) {
             //it is 2 panel
             //we load the main menu on the 1st panel
-            fragmentManager.beginTransaction()
+            /*fragmentManager.beginTransaction()
                     .add(R.id.mainActi, errorFragment)
-                    .commit();
+                    .commit();*/
 
             //we load the placeholder fragment on the other panel
             //fragmentManager.beginTransaction()                    .add(R.id.fragContent, loadPlaceHolder)                    .commit();
@@ -159,6 +182,9 @@ public class MainActivity extends AppCompatActivity implements
         //we load the json first
         viewModel = ViewModelProviders.of(this).get(JsonViewModel.class);
         viewModel.getData().observe(this, mainMenuObserver);
+
+        //we change the action bar title
+        changeActionBarName("BakingApp");
     }
 
     //we load the step menu
@@ -191,6 +217,7 @@ public class MainActivity extends AppCompatActivity implements
                 } else {
                     Log.i(TAG, "There's content we show the rv layout");
                     mainFragment.setAdapter(recipeList);
+                    mRecipe=recipeList;
 
                     //we update the fragment ui
                     getSupportFragmentManager().beginTransaction()
@@ -207,6 +234,18 @@ public class MainActivity extends AppCompatActivity implements
     public void onClickRetry() {
         //Toast.makeText(this,"We retry to load the json", Toast.LENGTH_SHORT).show();
         viewModel.getData();
+    }
+
+    //we change the actionBar
+    @Override
+    public void changeActionBarName(String newTitle) {
+        ActionBar titleUp=getSupportActionBar();
+        titleUp.setTitle(newTitle);
+    }
+
+    @Override
+    public void sendRecipeListenerToFragment() {
+        mainFragment.setAdapter(mRecipe);
     }
 
     //when we click on a recipe
@@ -235,6 +274,9 @@ public class MainActivity extends AppCompatActivity implements
 
         //we update in the widget
         updateIngredientsWidgetService.startActionUpdateIngredients(this,recipe.getName(),recipe.getIngredients());
+
+        //we change the action bar title
+        changeActionBarName(recipe.getName());
     }
 
     //when whe click on a step
@@ -329,27 +371,27 @@ public class MainActivity extends AppCompatActivity implements
     //when we click the next or previous buttons inside the step
     @Override
     public void OnStepDetail(String typeOfButton, int currentStep, int totalStep) {
-        Log.i(TAG,"We clicked the button: "+typeOfButton+" the current step is: "+currentStep+" the total steps is: "+totalStep);
-        Log.i(TAG,"the step list saved is "+mStepList);
-        Log.i(TAG,"the step list length is "+mStepList.size());
+        Log.i(TAG, "We clicked the button: " + typeOfButton + " the current step is: " + currentStep + " the total steps is: " + totalStep);
+        Log.i(TAG, "the step list saved is " + mStepList);
+        Log.i(TAG, "the step list length is " + mStepList.size());
         //we get the step list
         //mStepList=stepFragment.getStepList();
 
         StepMenuContainer steps;
 
-        if (typeOfButton==fragment_detail.BTN_NEXT){
+        if (typeOfButton == fragment_detail.BTN_NEXT) {
             //we go to the next fragment
             currentStep++;
-        }else{
+        } else {
             //we go to the previous step
             currentStep--;
-
         }
-        steps=mStepList.get(currentStep);
+
+        steps = mStepList.get(currentStep);
 
         if (steps.getType() == StepMenuContainer.TYPE_INGREDIENT) {
             //we change the current panels
-            panelState1=POS_INGREDIENT_CONTENT;
+            panelState1 = POS_INGREDIENT_CONTENT;
 
             ingredientFragment = new ingredientList();
 
@@ -361,14 +403,14 @@ public class MainActivity extends AppCompatActivity implements
 
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.mainActi, ingredientFragment)
-                    .addToBackStack("ingredientStep"+String.valueOf(currentStep))
+                    .addToBackStack("ingredientStep" + String.valueOf(currentStep))
                     .commit();
         }
 
         //if it is a step
         if (steps.getType() == StepMenuContainer.TYPE_STEP) {
             //we change the current panels
-            panelState1=POS_STEP_CONTENT;
+            panelState1 = POS_STEP_CONTENT;
 
             detailFragment = new fragment_detail();
 
@@ -381,7 +423,7 @@ public class MainActivity extends AppCompatActivity implements
 
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.mainActi, detailFragment)
-                    .addToBackStack("detailStep"+String.valueOf(currentStep))
+                    .addToBackStack("detailStep" + String.valueOf(currentStep))
                     .commit();
         }
     }
