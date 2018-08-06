@@ -401,10 +401,17 @@ public class MainActivity extends AppCompatActivity implements
                     steps.getIngredient()
             );
 
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.mainActi, ingredientFragment)
-                    .addToBackStack("ingredientStep" + String.valueOf(currentStep))
-                    .commit();
+            if (mTwoPanel==true) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragContent, ingredientFragment)
+                        .addToBackStack("ingredientStep" + String.valueOf(currentStep))
+                        .commit();
+            }else{
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.mainActi, ingredientFragment)
+                        .addToBackStack("ingredientStep" + String.valueOf(currentStep))
+                        .commit();
+            }
         }
 
         //if it is a step
@@ -421,10 +428,18 @@ public class MainActivity extends AppCompatActivity implements
                     currentStep,
                     totalStep);
 
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.mainActi, detailFragment)
-                    .addToBackStack("detailStep" + String.valueOf(currentStep))
-                    .commit();
+            //we check if it is 1 or 2 panels
+            if (mTwoPanel==true) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragContent, detailFragment)
+                        .addToBackStack("detailStep" + String.valueOf(currentStep))
+                        .commit();
+            }else{
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.mainActi, detailFragment)
+                        .addToBackStack("detailStep" + String.valueOf(currentStep))
+                        .commit();
+            }
         }
     }
 }

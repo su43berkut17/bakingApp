@@ -115,7 +115,7 @@ public class fragment_detail extends Fragment {
                 buttonNext.setVisibility(View.GONE);
             }
             //we check if we are in the initial position
-            if (mCurrentStep == 0) {
+            if (mCurrentStep == 0 || mCurrentStep == 1) {
                 buttonPrevious.setVisibility(View.GONE);
             }
 
