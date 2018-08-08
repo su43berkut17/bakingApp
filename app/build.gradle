@@ -39,6 +39,9 @@ dependencies {
     //exoplayer
     implementation 'com.google.android.exoplayer:exoplayer:2.8.2'
 
+    //image
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
     //testing
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
