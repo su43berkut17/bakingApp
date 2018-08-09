@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 
 import com.su43berkut17.nanodegree.bakingapp.data.Recipe;
 import com.su43berkut17.nanodegree.bakingapp.data.StepMenuContainer;
@@ -22,7 +23,8 @@ public class MainActivity extends AppCompatActivity implements
         mainMenuFragment.ChangeActionBarNameListener,
         mainMenuFragment.SendRecipeListener,
         stepList.onStepClickInterface,
-        fragment_detail.OnStepDetailClick{
+        fragment_detail.OnStepDetailClick,
+        fragment_detail.OnSavePlayerTime{
 
     //values for the panel states
     private static final String POS_MAIN_MENU="main_menu";
@@ -49,6 +51,9 @@ public class MainActivity extends AppCompatActivity implements
     //variable to store the step list for the previous and next buttons
     private static List<StepMenuContainer> mStepList;
     private static List<Recipe> mRecipe;
+
+    //variable to store the video time
+    private static long mPlayerTime;
 
     //variables that remember the state of the app, what is in which panel
     public String panelState1;
@@ -185,6 +190,9 @@ public class MainActivity extends AppCompatActivity implements
 
         //we change the action bar title
         changeActionBarName("BakingApp");
+
+        //we hide the top butotn
+        enableTopBackButton(false);
     }
 
     //we load the step menu
@@ -277,6 +285,16 @@ public class MainActivity extends AppCompatActivity implements
 
         //we change the action bar title
         changeActionBarName(recipe.getName());
+
+        //we activate the back button on the top
+        enableTopBackButton(true);
+    }
+
+    private void enableTopBackButton(Boolean activationStatus){
+        ActionBar actionBar=getSupportActionBar();
+
+        //we activate the button
+        actionBar.setDisplayHomeAsUpEnabled(activationStatus);
     }
 
     //when whe click on a step
@@ -317,7 +335,8 @@ public class MainActivity extends AppCompatActivity implements
                         steps.getStep().get(0).getThumbnailURL(),
                         steps.getStep().get(0).getDescription(),
                         currentStep,
-                        stepSize);
+                        stepSize,
+                        mPlayerTime);
 
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.mainActi, detailFragment)
@@ -358,7 +377,8 @@ public class MainActivity extends AppCompatActivity implements
                         steps.getStep().get(0).getThumbnailURL(),
                         steps.getStep().get(0).getDescription(),
                         currentStep,
-                        stepSize);
+                        stepSize,
+                        mPlayerTime);
 
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragContent, detailFragment)
@@ -426,7 +446,8 @@ public class MainActivity extends AppCompatActivity implements
                     steps.getStep().get(0).getThumbnailURL(),
                     steps.getStep().get(0).getDescription(),
                     currentStep,
-                    totalStep);
+                    totalStep,
+                    0);
 
             //we check if it is 1 or 2 panels
             if (mTwoPanel==true) {
@@ -441,5 +462,25 @@ public class MainActivity extends AppCompatActivity implements
                         .commit();
             }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                //we load the main menu
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                loadMainMenu(fragmentManager);
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void OnSavePlayerTimeActivity(long timeSaved) {
+        //we save the time of the player in the main activity
+        mPlayerTime=timeSaved;
     }
 }

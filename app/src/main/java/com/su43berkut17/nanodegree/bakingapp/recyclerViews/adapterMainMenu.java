@@ -6,8 +6,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.su43berkut17.nanodegree.bakingapp.R;
 import com.su43berkut17.nanodegree.bakingapp.data.Recipe;
 
@@ -43,6 +45,15 @@ public class adapterMainMenu extends RecyclerView.Adapter<adapterMainMenu.ViewHo
        holder.title.setText(recipe.getName());
        holder.ingredients.setText(String.valueOf(recipe.getIngredients().size()));
        holder.portions.setText(String.valueOf(recipe.getServings()));
+
+       //we check if the thumbnail is empty
+        if (recipe.getImage()==null || recipe.getImage().isEmpty() || recipe.getImage()==""){
+            //we hide the image view
+            holder.thumbnail.setVisibility(View.GONE);
+        }else {
+            //we load the image in picasso
+            Picasso.get().load(recipe.getImage()).into(holder.thumbnail);
+        }
     }
 
     @Override
@@ -54,12 +65,14 @@ public class adapterMainMenu extends RecyclerView.Adapter<adapterMainMenu.ViewHo
         private TextView title;
         private TextView portions;
         private TextView ingredients;
+        private ImageView thumbnail;
 
         public ViewHolder(final  View itemView){
             super(itemView);
             title=(TextView)itemView.findViewById(R.id.tv_title);
             portions=(TextView)itemView.findViewById(R.id.tv_amountPortions);
             ingredients=(TextView)itemView.findViewById(R.id.tv_amountIngredients);
+            thumbnail=(ImageView)itemView.findViewById(R.id.iv_recipe_thumb);
 
             itemView.setOnClickListener(this);
         }

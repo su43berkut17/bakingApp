@@ -44,20 +44,20 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class fragment_detail extends Fragment {
-    private static final String TAG="detailFragment";
+    private static final String TAG = "detailFragment";
 
     //item names
-    private static final String ARG_RECIPE_ID="recipeId";
-    private static final String ARG_VIDEO_URL="videoUrl";
-    private static final String ARG_THUMBNAIL="thumbnail";
-    private static final String ARG_STEP_TEXT="stepText";
-    private static final String ARG_CURRENT_STEP="currentStep";
-    private static final String ARG_TOTAL_STEP="totalStep";
-    private static final String ARG_VIDEO_POSITION="videoPosition";
+    private static final String ARG_RECIPE_ID = "recipeId";
+    private static final String ARG_VIDEO_URL = "videoUrl";
+    private static final String ARG_THUMBNAIL = "thumbnail";
+    private static final String ARG_STEP_TEXT = "stepText";
+    private static final String ARG_CURRENT_STEP = "currentStep";
+    private static final String ARG_TOTAL_STEP = "totalStep";
+    private static final String ARG_VIDEO_POSITION = "videoPosition";
 
     //type of button
-    public static final String BTN_PREVIOUS="previous_button";
-    public static final String BTN_NEXT="next_button";
+    public static final String BTN_PREVIOUS = "previous_button";
+    public static final String BTN_NEXT = "next_button";
 
     //items
     private static int mRecipeId;
@@ -68,7 +68,10 @@ public class fragment_detail extends Fragment {
     private static int mTotalStep;
     private static long mVideoPosition;
 
+    //click listener
     private OnStepDetailClick mListener;
+
+    private OnSavePlayerTime mSavePlayer;
 
     //exoplayer
     SimpleExoPlayer player;
@@ -77,8 +80,8 @@ public class fragment_detail extends Fragment {
         // Required empty public constructor
     }
 
-    public static fragment_detail newInstance(int recId, String recVideo, String recThumb, String recStep, int recCurrentStep, int recTotalStep) {
-        Log.i(TAG,"the new instance of the detail!");
+    public static fragment_detail newInstance(int recId, String recVideo, String recThumb, String recStep, int recCurrentStep, int recTotalStep, long recPlayerTime) {
+        Log.i(TAG, "the new instance of the detail!");
         fragment_detail fragment = new fragment_detail();
         Bundle args = new Bundle();
         args.putInt(ARG_RECIPE_ID, recId);
@@ -87,7 +90,7 @@ public class fragment_detail extends Fragment {
         args.putString(ARG_STEP_TEXT, recStep);
         args.putInt(ARG_CURRENT_STEP, recCurrentStep);
         args.putInt(ARG_TOTAL_STEP, recTotalStep);
-        args.putLong(ARG_VIDEO_POSITION,mVideoPosition);
+        args.putLong(ARG_VIDEO_POSITION, recPlayerTime);
         fragment.setArguments(args);
         return fragment;
     }
@@ -96,15 +99,18 @@ public class fragment_detail extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mRecipeId=getArguments().getInt(ARG_RECIPE_ID);
-            mVideoUrl=getArguments().getString(ARG_VIDEO_URL);
-            mThumbnail=getArguments().getString(ARG_THUMBNAIL);
-            mStepText=getArguments().getString(ARG_STEP_TEXT);
-            mCurrentStep=getArguments().getInt(ARG_CURRENT_STEP);
-            mTotalStep=getArguments().getInt(ARG_TOTAL_STEP);
+            mRecipeId = getArguments().getInt(ARG_RECIPE_ID);
+            mVideoUrl = getArguments().getString(ARG_VIDEO_URL);
+            mThumbnail = getArguments().getString(ARG_THUMBNAIL);
+            mStepText = getArguments().getString(ARG_STEP_TEXT);
+            mCurrentStep = getArguments().getInt(ARG_CURRENT_STEP);
+            mTotalStep = getArguments().getInt(ARG_TOTAL_STEP);
             //mVideoPosition=savedInstanceState.getLong(ARG_VIDEO_POSITION);
-            mVideoPosition=2000;
-            Log.i(TAG,"onCreate, the mVideoPosition value is "+mVideoPosition);
+            mVideoPosition=getArguments().getLong(ARG_VIDEO_POSITION);
+
+            //mVideoPosition=;
+
+            Log.i(TAG, "onCreate, the mVideoPosition value is " + mVideoPosition);
         }
     }
 
@@ -112,9 +118,9 @@ public class fragment_detail extends Fragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        Log.i(TAG,"we are saving the instance state, mVideoPosition is "+mVideoPosition);
-        if (mVideoPosition!=0){
-            outState.putLong(ARG_VIDEO_POSITION,mVideoPosition);
+        Log.i(TAG, "we are saving the instance state, mVideoPosition is " + mVideoPosition);
+        if (mVideoPosition != 0) {
+            outState.putLong(ARG_VIDEO_POSITION, mVideoPosition);
         }
     }
 
@@ -126,18 +132,18 @@ public class fragment_detail extends Fragment {
 
         //populate the ui
         //we check if it is video only mode
-        if (detailView.findViewById(R.id.btn_next_step)!=null) {
+        if (detailView.findViewById(R.id.btn_next_step) != null) {
             //title
             TextView textDescription = detailView.findViewById(R.id.tv_steps);
             textDescription.setText(mStepText);
 
             //image
             ImageView imageThumb = detailView.findViewById(R.id.iv_thumbnail_detail);
-            Log.i(TAG,"the content of mThumbnail is--"+mThumbnail+"--END--");
+            Log.i(TAG, "the content of mThumbnail is--" + mThumbnail + "--END--");
 
-            if (mThumbnail==null || mThumbnail=="" || mThumbnail.isEmpty()){
+            if (mThumbnail == null || mThumbnail == "" || mThumbnail.isEmpty()) {
                 imageThumb.setVisibility(View.GONE);
-            }else{
+            } else {
                 imageThumb.setVisibility(View.VISIBLE);
                 Picasso.get().load(mThumbnail).into(imageThumb);
             }
@@ -166,13 +172,13 @@ public class fragment_detail extends Fragment {
         }
 
         PlayerView playerView;
-        playerView=detailView.findViewById(R.id.recipe_player);
+        playerView = detailView.findViewById(R.id.recipe_player);
 
         //we check if there is a video
-        if (mVideoUrl==null || mVideoUrl=="" || mVideoUrl.isEmpty()){
+        if (mVideoUrl == null || mVideoUrl == "" || mVideoUrl.isEmpty()) {
             //we hide the video
             playerView.setVisibility(View.GONE);
-        }else {
+        } else {
             //we show the video
             playerView.setVisibility(View.VISIBLE);
             initiateVideoPlayer(detailView);
@@ -181,43 +187,47 @@ public class fragment_detail extends Fragment {
         return detailView;
     }
 
-    private void initiateVideoPlayer(View detailView){
-            // Create the player
-            player = ExoPlayerFactory.newSimpleInstance(
-                    new DefaultRenderersFactory(getContext()),
-                    new DefaultTrackSelector(), new DefaultLoadControl());
+    private void initiateVideoPlayer(View detailView) {
+        // Create the player
+        player = ExoPlayerFactory.newSimpleInstance(
+                new DefaultRenderersFactory(getContext()),
+                new DefaultTrackSelector(), new DefaultLoadControl());
 
-            PlayerView playerView;
-            playerView=detailView.findViewById(R.id.recipe_player);
-            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
-            playerView.setPlayer(player);
+        PlayerView playerView;
+        playerView = detailView.findViewById(R.id.recipe_player);
+        playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+        playerView.setPlayer(player);
 
-            Uri uri = Uri.parse(mVideoUrl);
-            MediaSource mediaSource = new ExtractorMediaSource.Factory(new DefaultHttpDataSourceFactory("detailFragment")).createMediaSource(uri);
+        Uri uri = Uri.parse(mVideoUrl);
+        MediaSource mediaSource = new ExtractorMediaSource.Factory(new DefaultHttpDataSourceFactory("detailFragment")).createMediaSource(uri);
 
-            if (mVideoPosition!=0){
-                //we resume
-                player.seekTo(mVideoPosition);
-                player.prepare(mediaSource, false, false);
-                player.getPlayWhenReady();
-            }else{
-                player.prepare(mediaSource, true, false);
-                player.getPlayWhenReady();
-            }
+        if (mVideoPosition != 0) {
+            //we resume
+            player.seekTo(mVideoPosition);
+            player.prepare(mediaSource, false, false);
+            //player.getPlayWhenReady();
+            player.setPlayWhenReady(true);
+        } else {
+            player.prepare(mediaSource, true, false);
+            //player.getPlayWhenReady();
+            player.setPlayWhenReady(true);
+        }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         mListener = (OnStepDetailClick) context;
+        mSavePlayer = (OnSavePlayerTime) context;
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (player!=null) {
+        if (player != null) {
             //we save the value in the var
-            mVideoPosition=player.getCurrentPosition();
+            mVideoPosition = player.getCurrentPosition();
+            mSavePlayer.OnSavePlayerTimeActivity(mVideoPosition);
 
             player.release();
         }
@@ -227,9 +237,14 @@ public class fragment_detail extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        mSavePlayer = null;
     }
 
     public interface OnStepDetailClick {
         void OnStepDetail(String typeOfButton, int currentStep, int totalStep);
+    }
+
+    public interface OnSavePlayerTime {
+        void OnSavePlayerTimeActivity(long timeSaved);
     }
 }
