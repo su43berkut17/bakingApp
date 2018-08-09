@@ -105,23 +105,12 @@ public class fragment_detail extends Fragment {
             mStepText = getArguments().getString(ARG_STEP_TEXT);
             mCurrentStep = getArguments().getInt(ARG_CURRENT_STEP);
             mTotalStep = getArguments().getInt(ARG_TOTAL_STEP);
-            //mVideoPosition=savedInstanceState.getLong(ARG_VIDEO_POSITION);
-            mVideoPosition=getArguments().getLong(ARG_VIDEO_POSITION);
-
-            //mVideoPosition=;
-
-            Log.i(TAG, "onCreate, the mVideoPosition value is " + mVideoPosition);
         }
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-
-        Log.i(TAG, "we are saving the instance state, mVideoPosition is " + mVideoPosition);
-        if (mVideoPosition != 0) {
-            outState.putLong(ARG_VIDEO_POSITION, mVideoPosition);
-        }
     }
 
     @Override
@@ -212,6 +201,11 @@ public class fragment_detail extends Fragment {
             //player.getPlayWhenReady();
             player.setPlayWhenReady(true);
         }
+    }
+
+    //we set the video value
+    public void setVideoPosition(long recPosition){
+        mVideoPosition=recPosition;
     }
 
     @Override

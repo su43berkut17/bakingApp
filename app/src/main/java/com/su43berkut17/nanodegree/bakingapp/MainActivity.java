@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final String STEP_LIST_SAVED="step_list_saved";
     private static final String RECIPE_SAVED="recipe_saved";
+    private static final String POSITION_PLAYER_SAVED="player_saved";
 
     mainMenuFragment mainFragment;
     noInternetError errorFragment;
@@ -97,6 +98,9 @@ public class MainActivity extends AppCompatActivity implements
             }
 
             Log.i(TAG,"there is already a saved instance state");
+
+            //we check if the detail view
+            detailFragment.setVideoPosition(mPlayerTime);
         }
     }
 
@@ -130,6 +134,10 @@ public class MainActivity extends AppCompatActivity implements
 
             outState.putParcelableArrayList(RECIPE_SAVED,recipeListSend);
         }
+
+        //save the video time
+        Log.i(TAG,"We are saving the player time "+mPlayerTime);
+        outState.putLong(POSITION_PLAYER_SAVED,mPlayerTime);
     }
 
     @Override
@@ -161,6 +169,9 @@ public class MainActivity extends AppCompatActivity implements
                 mRecipe.add(recipeListReceive.get(i));
             }
         }
+
+        //load the time
+        mPlayerTime=savedInstanceState.getLong(POSITION_PLAYER_SAVED);
     }
 
     //lifecycle loaders
