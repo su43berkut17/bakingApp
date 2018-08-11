@@ -37,6 +37,9 @@ public class mainMenuFragment extends Fragment implements adapterMainMenu.recipe
     private ChangeActionBarNameListener mActionListener;
     private SendRecipeListener mRecipeListener;
 
+    //listener for up navigation
+    private HideTopNavigation mHideTopBavigation;
+
     public mainMenuFragment() {
     }
 
@@ -66,6 +69,7 @@ public class mainMenuFragment extends Fragment implements adapterMainMenu.recipe
         mMainListener = (OnMainFragmentInteractionListener) context;
         mActionListener = (ChangeActionBarNameListener) context;
         mRecipeListener = (SendRecipeListener) context;
+        mHideTopBavigation=(HideTopNavigation) context;
     }
 
     @Nullable
@@ -94,6 +98,9 @@ public class mainMenuFragment extends Fragment implements adapterMainMenu.recipe
     @Override
     public void onResume() {
         super.onResume();
+
+        //we hide the button on top
+        mHideTopBavigation.hideTopNavigationFromFragment();
     }
 
     @Override
@@ -141,5 +148,9 @@ public class mainMenuFragment extends Fragment implements adapterMainMenu.recipe
 
     public interface SendRecipeListener {
         void sendRecipeListenerToFragment();
+    }
+
+    public interface HideTopNavigation{
+        void hideTopNavigationFromFragment();
     }
 }

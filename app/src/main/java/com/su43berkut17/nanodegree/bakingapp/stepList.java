@@ -33,6 +33,7 @@ public class stepList extends Fragment implements adapterRecipeSteps.stepListene
     private List<StepMenuContainer> finalAdapter;
 
     private onStepClickInterface mListener;
+    private onShowSteps mShowSteps;
 
     public stepList() {
         // Required empty public constructor
@@ -59,6 +60,14 @@ public class stepList extends Fragment implements adapterRecipeSteps.stepListene
     public void onAttach(Context context) {
         super.onAttach(context);
         mListener=(onStepClickInterface) context;
+        mShowSteps=(onShowSteps) context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener=null;
+        mShowSteps=null;
     }
 
     @Override
@@ -83,6 +92,9 @@ public class stepList extends Fragment implements adapterRecipeSteps.stepListene
     @Override
     public void onResume() {
         super.onResume();
+
+        //we reset the video value to 0
+        mShowSteps.onStepResume();
     }
 
     @Override
@@ -149,5 +161,10 @@ public class stepList extends Fragment implements adapterRecipeSteps.stepListene
 
     public interface onStepClickInterface {
         void onOpenStep(StepMenuContainer steps, int currentStep, int stepSize);
+    }
+
+    public interface onShowSteps{
+        //if we show the step menu that means the video position will reset
+        void onStepResume();
     }
 }

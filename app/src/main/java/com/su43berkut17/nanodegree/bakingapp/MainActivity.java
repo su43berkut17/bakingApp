@@ -3,6 +3,7 @@ package com.su43berkut17.nanodegree.bakingapp;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
@@ -22,7 +23,9 @@ public class MainActivity extends AppCompatActivity implements
         mainMenuFragment.OnMainFragmentInteractionListener,
         mainMenuFragment.ChangeActionBarNameListener,
         mainMenuFragment.SendRecipeListener,
+        mainMenuFragment.HideTopNavigation,
         stepList.onStepClickInterface,
+        stepList.onShowSteps,
         fragment_detail.OnStepDetailClick,
         fragment_detail.OnSavePlayerTime{
 
@@ -174,6 +177,12 @@ public class MainActivity extends AppCompatActivity implements
         mPlayerTime=savedInstanceState.getLong(POSITION_PLAYER_SAVED);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        enableTopBackButton(true);
+    }
+
     //lifecycle loaders
     private void loadMainMenu(FragmentManager fragmentManager){
         Log.i(TAG,"loading main menu");
@@ -183,18 +192,6 @@ public class MainActivity extends AppCompatActivity implements
                 .add(R.id.mainActi, errorFragment)
                 .commit();
 
-        //we check if it is 1 or 2 panel
-        if (mTwoPanel == true) {
-            //it is 2 panel
-            //we load the main menu on the 1st panel
-            /*fragmentManager.beginTransaction()
-                    .add(R.id.mainActi, errorFragment)
-                    .commit();*/
-
-            //we load the placeholder fragment on the other panel
-            //fragmentManager.beginTransaction()                    .add(R.id.fragContent, loadPlaceHolder)                    .commit();
-        }
-
         //we load the json first
         viewModel = ViewModelProviders.of(this).get(JsonViewModel.class);
         viewModel.getData().observe(this, mainMenuObserver);
@@ -202,21 +199,9 @@ public class MainActivity extends AppCompatActivity implements
         //we change the action bar title
         changeActionBarName("BakingApp");
 
-        //we hide the top butotn
-        enableTopBackButton(false);
+        //we hide the top button
+        enableTopBackButton(true);
     }
-
-    //we load the step menu
-    /*private void loadStepMenu(){
-        //we update the fragment ui
-        stepFragment.setAdapter(recipe.getSteps(),recipe.getIngredients());
-
-        getSupportFragmentManager().beginTransaction()
-                .remove(mainFragment)
-                .replace(R.id.mainActi,stepFragment)
-                .addToBackStack("menuStep")
-                .commit();
-    }*/
 
     final Observer<List<Recipe>> mainMenuObserver= new Observer<List<Recipe>>(){
         @Override
@@ -296,9 +281,6 @@ public class MainActivity extends AppCompatActivity implements
 
         //we change the action bar title
         changeActionBarName(recipe.getName());
-
-        //we activate the back button on the top
-        enableTopBackButton(true);
     }
 
     private void enableTopBackButton(Boolean activationStatus){
@@ -311,6 +293,9 @@ public class MainActivity extends AppCompatActivity implements
     //when whe click on a step
     @Override
     public void onOpenStep(StepMenuContainer steps, int currentStep, int stepSize) {
+        //we reset the player time
+        mPlayerTime=0;
+
         //we check if it is 1 or 2 panels
         if (mTwoPanel==false) {
             //1 panel
@@ -340,6 +325,9 @@ public class MainActivity extends AppCompatActivity implements
                 panelState1=POS_STEP_CONTENT;
 
                 detailFragment = new fragment_detail();
+
+                //we reset it
+                detailFragment.setVideoPosition(0);
 
                 detailFragment = fragment_detail.newInstance(steps.getId(),
                         steps.getStep().get(0).getVideoURL(),
@@ -382,6 +370,8 @@ public class MainActivity extends AppCompatActivity implements
                 panelState2=POS_STEP_CONTENT;
 
                 detailFragment = new fragment_detail();
+
+                detailFragment.setVideoPosition(0);
 
                 detailFragment = fragment_detail.newInstance(steps.getId(),
                         steps.getStep().get(0).getVideoURL(),
@@ -460,6 +450,8 @@ public class MainActivity extends AppCompatActivity implements
                     totalStep,
                     0);
 
+            detailFragment.setVideoPosition(0);
+
             //we check if it is 1 or 2 panels
             if (mTwoPanel==true) {
                 getSupportFragmentManager().beginTransaction()
@@ -479,9 +471,36 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                Log.i(TAG,"BACK BUTTON on optionsItemSelected");
                 //we load the main menu
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                loadMainMenu(fragmentManager);
+                mainFragment.setAdapter(mRecipe);
+
+                FragmentManager fm = getSupportFragmentManager();
+                //we clear the backstack
+                int count = fm.getBackStackEntryCount();
+                for(int i = 0; i < count; ++i) {
+                    fm.popBackStack();
+                }
+
+                //we update the fragment of the main menu
+                fm.beginTransaction()
+                        .replace(R.id.mainActi, mainFragment)
+                        .commit();
+
+                //we check if it is 2 panels to make sure we go back
+                if (mTwoPanel){
+                    //cycle through all the sub fragments
+                    for (Fragment fragment:fm.getFragments()){
+                        fm.beginTransaction().
+                                remove(fragment).commit();
+                    }
+                }
+
+                //we hide the back button on top
+                enableTopBackButton(false);
+
+                //we reset the video value
+                mPlayerTime=0;
 
                 return true;
             default:
@@ -493,5 +512,16 @@ public class MainActivity extends AppCompatActivity implements
     public void OnSavePlayerTimeActivity(long timeSaved) {
         //we save the time of the player in the main activity
         mPlayerTime=timeSaved;
+    }
+
+    @Override
+    public void hideTopNavigationFromFragment() {
+        enableTopBackButton(false);
+    }
+
+    @Override
+    public void onStepResume() {
+        enableTopBackButton(true);
+        mPlayerTime=0;
     }
 }

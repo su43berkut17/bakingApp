@@ -68,6 +68,9 @@ public class fragment_detail extends Fragment {
     private static int mTotalStep;
     private static long mVideoPosition;
 
+    //counter if the next or previous item has been clicked
+    private boolean mIsButtonClicked;
+
     //click listener
     private OnStepDetailClick mListener;
 
@@ -81,7 +84,7 @@ public class fragment_detail extends Fragment {
     }
 
     public static fragment_detail newInstance(int recId, String recVideo, String recThumb, String recStep, int recCurrentStep, int recTotalStep, long recPlayerTime) {
-        Log.i(TAG, "the new instance of the detail!");
+        Log.i(TAG, " we are creating the new instance of the detail inside newInstance");
         fragment_detail fragment = new fragment_detail();
         Bundle args = new Bundle();
         args.putInt(ARG_RECIPE_ID, recId);
@@ -128,7 +131,7 @@ public class fragment_detail extends Fragment {
 
             //image
             ImageView imageThumb = detailView.findViewById(R.id.iv_thumbnail_detail);
-            Log.i(TAG, "the content of mThumbnail is--" + mThumbnail + "--END--");
+            //Log.i(TAG, "the content of mThumbnail is--" + mThumbnail + "--END--");
 
             if (mThumbnail == null || mThumbnail == "" || mThumbnail.isEmpty()) {
                 imageThumb.setVisibility(View.GONE);
@@ -152,11 +155,17 @@ public class fragment_detail extends Fragment {
             }
 
             buttonNext.setOnClickListener(view ->
-                    mListener.OnStepDetail(BTN_NEXT, mCurrentStep, mTotalStep)
+                    {
+                        mIsButtonClicked = true;
+                        mListener.OnStepDetail(BTN_NEXT, mCurrentStep, mTotalStep);
+                    }
             );
 
             buttonPrevious.setOnClickListener(view ->
-                    mListener.OnStepDetail(BTN_PREVIOUS, mCurrentStep, mTotalStep)
+                    {
+                        mIsButtonClicked=true;
+                        mListener.OnStepDetail(BTN_PREVIOUS, mCurrentStep, mTotalStep);
+                    }
             );
         }
 
@@ -190,6 +199,7 @@ public class fragment_detail extends Fragment {
         Uri uri = Uri.parse(mVideoUrl);
         MediaSource mediaSource = new ExtractorMediaSource.Factory(new DefaultHttpDataSourceFactory("detailFragment")).createMediaSource(uri);
 
+        Log.i(TAG,"We are creating the video player, mVideoPosition is "+ mVideoPosition);
         if (mVideoPosition != 0) {
             //we resume
             player.seekTo(mVideoPosition);
@@ -197,6 +207,7 @@ public class fragment_detail extends Fragment {
             //player.getPlayWhenReady();
             player.setPlayWhenReady(true);
         } else {
+            player.seekTo(0);
             player.prepare(mediaSource, true, false);
             //player.getPlayWhenReady();
             player.setPlayWhenReady(true);
@@ -206,6 +217,7 @@ public class fragment_detail extends Fragment {
     //we set the video value
     public void setVideoPosition(long recPosition){
         mVideoPosition=recPosition;
+        Log.i(TAG,"We got the old position of the player from the main activity");
     }
 
     @Override
@@ -219,11 +231,17 @@ public class fragment_detail extends Fragment {
     public void onPause() {
         super.onPause();
         if (player != null) {
-            //we save the value in the var
-            mVideoPosition = player.getCurrentPosition();
-            mSavePlayer.OnSavePlayerTimeActivity(mVideoPosition);
+            //we save only if the buttons are null
+            if (mIsButtonClicked!=true) {
+                //we save the value in the var
+                mVideoPosition = player.getCurrentPosition();
+                mSavePlayer.OnSavePlayerTimeActivity(mVideoPosition);
+                Log.i(TAG,"The buttons haven't been clicked so we save the value");
+            }
 
             player.release();
+
+            Log.i(TAG,"On Pause, we are saving the state of the player "+mVideoPosition);
         }
     }
 
